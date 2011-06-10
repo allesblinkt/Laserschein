@@ -23,33 +23,30 @@
  */
 package laserschein;
 
-import java.util.Vector;
 
 /**
- * Collects graphics (i.e. connected shapes) for one frame to be displayed. {@link laserschein.Optimizer} turns this into a 
- * {@link laserschein.LaserFrame} suitable for output on a laser scanner.
+ * Is going to provide a connection to the Easylase USB 2 ILDA box
  * 
  * @author allesblinkt
  */
-public class LaserGraphic {
+public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 
-	private Vector<Vector<LaserPoint>> _myShapes;
-
-
-	public LaserGraphic() {
-		_myShapes = new Vector<Vector<LaserPoint>>();
+	@Override
+	public void initialize() {
+		// TODO fill me
+		
 	}
 
-
-	public Vector<Vector<LaserPoint>> shapes() {
-		return _myShapes;
+	@Override
+	public void draw(final LaserFrame theFrame) {
+		// TODO fill me
+		
 	}
 
-
-	/**
-	 * Clears all the lists.
-	 */
-	public void reset() {
-		_myShapes.clear();
+	@Override
+	public void destroy() {
+		// TODO fill me
+		
 	}
+
 }

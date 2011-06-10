@@ -1,9 +1,39 @@
+/**
+ *  
+ *  Laserschein. interactive ILDA output from processing and java
+ *
+ *  2011 by Benjamin Maus
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ * @author Benjamin Maus (http://www.allesblinkt.com)
+ *
+ */
 package laserschein;
 
 import com.sun.jna.*;
 import com.sun.jna.ptr.*;
 import java.util.*;
 
+/**
+ * Uses the Pangolin SDK to control a Pangolin QM2000 or QM2000.net via Laserschein.
+ * Works on windows for now.
+ * 
+ * @author allesblinkt
+ *
+ */
 public class LD2000Adaptor extends AbstractLaserOutput {
 
 	private boolean _myIsInitialized = false;
@@ -33,6 +63,7 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 	}
 
 
+	@Override
 	public void initialize() {
 		if (LD2000Native.IS_SUPPORTED_PLATFORM) {
 			Logger.printInfo("LD2000Adaptor.draw", "Initializing");
@@ -125,8 +156,8 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 
 	}
 
-
-	public void draw(LaserFrame theFrame) {
+	@Override
+	public void draw(final LaserFrame theFrame) {
 		/* Initialize DLL if not done */
 		if (!_myIsInitialized) {
 			initialize();
@@ -152,7 +183,6 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 			_myFrame.writeField("NumPoints");
 
 			/* Points */
-
 			for (int i = 0; i < myDisplayedNumberOfPoints; i++) {
 				final LaserPoint myPoint = myPoints.get(i);
 
@@ -193,12 +223,10 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 		}
 	}
 
-
+	@Override
 	public void destroy() {
 		if (_myIsInitialized && _myIsReady) {
-			LD2000Native.SetWorkingScanners(new NativeLong(-1)); // Once the
-																	// loop
-
+			LD2000Native.SetWorkingScanners(new NativeLong(-1)); 
 			LD2000Native.SetWorkingTracks(new NativeLong(-1));
 			LD2000Native.DisplayFrame(new NativeLong(0));
 			LD2000Native.DisplayUpdate();

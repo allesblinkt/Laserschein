@@ -1,7 +1,38 @@
+/**
+ *  
+ *  Laserschein. interactive ILDA output from processing and java
+ *
+ *  2011 by Benjamin Maus
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ * @author Benjamin Maus (http://www.allesblinkt.com)
+ *
+ */
 package laserschein;
 
 import java.util.Vector;
 
+/**
+ * The Optimizer takes a bunch of connected points (i.e. graphics) and 
+ * converts (optimizes) it for output on a laser scanner, where each 
+ * sample is one fixed time slice. 
+ * 
+ * @author allesblinkt
+ *
+ */
 public class Optimizer {
 
 	private OptimizerSettings _mySettings;
@@ -15,6 +46,12 @@ public class Optimizer {
 	}
 
 
+	/**
+	 * Does all the magic. The optimized frame can be retrieved 
+	 * with {@link laserschein.Optimizer#optimizedFrame()}
+	 * 
+	 * @param theGraphic
+	 */
 	public void optimize(LaserGraphic theGraphic) {
 		_myOptimizedFrame = new LaserFrame();
 		_myLaserGraphic = theGraphic;
@@ -293,6 +330,9 @@ public class Optimizer {
 	}
 
 
+	/**
+	 * @return the frame suited for display on a laser system
+	 */
 	public LaserFrame optimizedFrame() {
 		return _myOptimizedFrame;
 	}

@@ -27,8 +27,11 @@ package laserschein;
 
 import java.util.Calendar;
 
+
 /**
- * @invisible
+ * A simple class for logging messages.
+ * 
+ * @author Andreas Schlegel (http://www.sojamo.de)
  */
 public class Logger {
 

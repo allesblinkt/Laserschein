@@ -1,40 +1,103 @@
+/**
+ *  
+ *  Laserschein. interactive ILDA output from processing and java
+ *
+ *  2011 by Benjamin Maus
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ * @author Benjamin Maus (http://www.allesblinkt.com)
+ *
+ */
 package laserschein;
 
 import processing.core.*;
 
+/**
+ * The main library
+ * 
+ * @author allesblinkt
+ */
 public class Laserschein {
 
 	private PApplet _myParent;
 	private Laser3D _myRenderer;
 
 
+	
+	/**
+	 * Inits the library "Processing style"
+	 * 
+	 * @param theParent the main Processing applet. Almost anytime: this
+	 */
 	public Laserschein(PApplet theParent) {
 		_myParent = theParent;
 		_myParent.registerDispose(this);
 
 		Logger.printInfo("Laserschein", "Initializing the Laser");
-		LD2000Adaptor.getInstance().initialize();
-
+		
+		LD2000Adaptor.getInstance().initialize();  // TODO: make this non-fixed
+		
+		
+		
 		_myRenderer = new Laser3D(_myParent);
 	}
 
 
+	/**
+	 * Get the renderer that processing can use with beginRaw() and endRaw(). So one can 
+	 * draw stuff on the laser with the processing syntax.
+	 * 
+	 * @return a reference to the renderer 
+	 */
 	public Laser3D renderer() {
 		return _myRenderer;
 	}
 
 
+	/**
+	 * Same as {@link laserschein.Laserschein#renderer()}
+	 * 
+	 * @see laserschein.Laserschein#renderer()
+	 */
 	public Laser3D getRenderer() {
 		return _myRenderer;
 	}
-
-
-	public void dispose() {
-		Logger.printInfo("Laserschein.dispose", "Destroying the Laser");
-		LD2000Adaptor.getInstance().destroy();
+	
+	public OptimizerSettings settings(){
+		return _myRenderer.settings();
+	}
+	
+	
+	public void setSettingsRef(OptimizerSettings theSettings) {
+		 _myRenderer.setSettingsRef(theSettings);
 	}
 
 
+	/**
+	 * Cleans up when the processing applet exits. Gets called automatically. Do not worry.
+	 */
+	public void dispose() {
+		Logger.printInfo("Laserschein.dispose", "Destroying the Laser");
+		LD2000Adaptor.getInstance().destroy(); //TODO: make this non-fixed
+	}
+
+
+	/**
+	 * Draws a very crude (for now) debug view that shows what the {@link laserschein.Optimizer} generates
+	 */
 	public void drawDebugView() {
 		if (_myRenderer.hasFinishedFrame()) {
 			final LaserFrame myFrame = _myRenderer.finalFrame();
@@ -144,12 +207,5 @@ public class Laserschein {
 		}
 	}
 	
-	public OptimizerSettings settings(){
-		return _myRenderer.settings();
-	}
-	
-	
-	public void setSettingsRef(OptimizerSettings theSettings) {
-		 _myRenderer.setSettingsRef(theSettings);
-	}
+
 }
