@@ -11,10 +11,11 @@ public class TestEasyLaseUsb2 {
 	 */
 	public static void main(String[] args) {
 		
-		IntByReference iref = new IntByReference();
-		iref.setValue(0);
 		
-		EasylaseUsb2Native.PTSTRUCT.ByReference x = new EasylaseUsb2Native.PTSTRUCT.ByReference();
+		
+		int cardNumber = -1;
+		
+		EasylaseUsb2Native.Point.ByReference x = new EasylaseUsb2Native.Point.ByReference();
 		
 		x.x = 10;
 		x.y = 10;
@@ -23,12 +24,17 @@ public class TestEasyLaseUsb2 {
 		x.b = 0;
 		x.i = 250;
 		
-		System.out.println(EasylaseUsb2Native.EasyLaseGetCardNum());
 		
-		System.out.println(EasylaseUsb2Native.EasyLaseWriteFrame(iref, x, 8, (short)1000));
+		System.out.println( "Number of cards: " + EasylaseUsb2Native.EasyLaseGetCardNum() );
+		cardNumber = 0;
+		System.out.println("Card number :" + cardNumber);
 		
-		System.out.println(EasylaseUsb2Native.EasyLaseGetStatus(iref));
+		System.out.println(EasylaseUsb2Native.EasyLaseWriteFrame(new IntByReference(cardNumber), x, 8, (short)1000));
 		
+		System.out.println(EasylaseUsb2Native.EasyLaseGetStatus(new IntByReference(cardNumber)));
+		
+		System.out.println(EasylaseUsb2Native.EasyLaseStop(new IntByReference(cardNumber)));
+
 		System.out.println(EasylaseUsb2Native.EasyLaseClose());
 		
 	}

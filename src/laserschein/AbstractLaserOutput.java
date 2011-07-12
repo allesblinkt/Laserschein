@@ -29,8 +29,15 @@ package laserschein;
  * 
  * @author allesblinkt
  */
+/**
+ * @author dorgl
+ *
+ */
 public abstract class AbstractLaserOutput {
-
+	
+	protected OutputState _myState = OutputState.UNINITALIZED;
+	
+	
 	/**
 	 * Initializes the driver and other stuff. Gets called once when Laserschein is initialized.
 	 */
@@ -49,4 +56,66 @@ public abstract class AbstractLaserOutput {
 	 * A good place to unload DLLs and clean up.  
 	 */
 	public abstract void destroy();
+	
+	
+	/**
+	 * Returns the maximum number of points per frame supported by the laser device.
+	 * <b>Note:</b> This is fixed for some devices and dynamic for others...
+	 * @return The maximum number of points per frame
+	 */
+	public abstract int getMaximumNumberOfPoints();
+	
+	
+	/**
+	 * Get the current scan speed.
+	 * @return The scan speed in PPS
+	 */
+	public abstract int getScanSpeed();
+	
+	
+	/**
+	 * Set the scan speed for the frames to follow
+	 * @param theSpeed in PPS
+	 */
+	public abstract void setScanSpeed(int theSpeed);
+	
+	
+	/**
+	 * Query the minimum supported scan speed
+	 * @return The scan speed in PPS
+	 */
+	public abstract int getMinumumScanSpeed();
+
+	
+
+	/**
+	 * Query the maximum supported scan speed
+	 * @return The scan speed in PPS
+	 */
+	public abstract int getMaximumScanSpeed();
+
+
+	/**
+	 * @return
+	 */
+	public OutputState getState() {
+		return _myState;
+	}
+	
+	
+	/**
+	 * Describes the state the output module is in
+	 * 
+	 * @author allesblinkt
+	 */
+	public enum OutputState {
+		UNINITALIZED,
+		UNSUPPORTED_PLATFORM,
+		LIBRARY_ERROR,
+		NO_DEVICES_FOUND, 
+		READY
+	}
+
+	
+	
 }

@@ -31,9 +31,13 @@ package laserschein;
  */
 public class LaserPoint {
 
-	public int x;
+	public int x; // -
 	public int y;
-	public int color;
+	
+	public int r;
+	public int g;
+	public int b;
+	
 	public boolean isCorner = false;
 	public boolean isBlanked = false;
 	public float turningAngle = 180;
@@ -59,7 +63,9 @@ public class LaserPoint {
 	public LaserPoint(final LaserPoint theLaserPoint) {
 		this.x = theLaserPoint.x;
 		this.y = theLaserPoint.y;
-		this.color = theLaserPoint.color;
+		this.r = theLaserPoint.r;
+		this.g = theLaserPoint.g;
+		this.b = theLaserPoint.b;
 		this.isCorner = theLaserPoint.isCorner;
 		this.isBlanked = theLaserPoint.isBlanked;
 	}
@@ -74,7 +80,9 @@ public class LaserPoint {
 	public boolean isCoincided(final LaserPoint theOther) {
 		if (this.x == theOther.x &&
 				this.y == theOther.y &&
-				this.color == theOther.color &&
+				this.r == theOther.r &&
+				this.g == theOther.g &&
+				this.b == theOther.b &&
 				this.isCorner == theOther.isCorner &&
 				this.isBlanked == theOther.isBlanked) {
 			return true;

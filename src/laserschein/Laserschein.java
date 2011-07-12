@@ -23,6 +23,7 @@
  */
 package laserschein;
 
+import laserschein.AbstractLaserOutput.OutputState;
 import processing.core.*;
 
 /**
@@ -31,30 +32,53 @@ import processing.core.*;
  * @author allesblinkt
  */
 public class Laserschein {
+	
+	public static final Class<LD2000Adaptor> LD2000 = LD2000Adaptor.class;
+	public static final Class<EasylaseUsb2Adaptor> EASYLASEUSB2 = EasylaseUsb2Adaptor.class;
+
 
 	private PApplet _myParent;
 	private Laser3D _myRenderer;
 
+	private AbstractLaserOutput _myOutput;
 
-	
+
+
 	/**
 	 * Inits the library "Processing style"
 	 * 
 	 * @param theParent the main Processing applet. Almost anytime: this
 	 */
 	public Laserschein(PApplet theParent) {
+		this(theParent, LD2000Adaptor.class);
+	}
+
+	
+	public Laserschein(PApplet theParent, Class theOutputClass){
 		_myParent = theParent;
 		_myParent.registerDispose(this);
 
 		Logger.printInfo("Laserschein", "Initializing the Laser");
-		
-		LD2000Adaptor.getInstance().initialize();  // TODO: make this non-fixed
-		
-		
-		
-		_myRenderer = new Laser3D(_myParent);
-	}
 
+		try {
+			_myOutput = (AbstractLaserOutput)theOutputClass.newInstance();
+			_myOutput.initialize();
+		} catch (InstantiationException e) {
+			Logger.printError("Laserschein", "This is not a class supported as an output");
+		} catch (IllegalAccessException e) {
+			Logger.printError("Laserschein", "This is not a class supported as an output");
+		}
+
+		_myRenderer = new Laser3D(_myParent, this);
+	}
+	
+	
+	public void draw(final LaserFrame theFinalFrame) {
+		if(_myOutput != null && _myOutput.getState() == OutputState.READY){
+			_myOutput.draw(theFinalFrame);
+		}
+	}
+	
 
 	/**
 	 * Get the renderer that processing can use with beginRaw() and endRaw(). So one can 
@@ -66,7 +90,7 @@ public class Laserschein {
 		return _myRenderer;
 	}
 
-
+	
 	/**
 	 * Same as {@link laserschein.Laserschein#renderer()}
 	 * 
@@ -76,13 +100,29 @@ public class Laserschein {
 		return _myRenderer;
 	}
 	
+	
+
+	public AbstractLaserOutput output() {
+		return _myOutput;
+	}
+
+	
+	/**
+	 * Same as {@link laserschein.Laserschein#output()}
+	 * 
+	 * @see laserschein.Laserschein#output()
+	 */
+	public AbstractLaserOutput getOutput() {
+		return _myOutput;
+	}
+
 	public OptimizerSettings settings(){
 		return _myRenderer.settings();
 	}
-	
-	
+
+
 	public void setSettingsRef(OptimizerSettings theSettings) {
-		 _myRenderer.setSettingsRef(theSettings);
+		_myRenderer.setSettingsRef(theSettings);
 	}
 
 
@@ -91,7 +131,10 @@ public class Laserschein {
 	 */
 	public void dispose() {
 		Logger.printInfo("Laserschein.dispose", "Destroying the Laser");
-		LD2000Adaptor.getInstance().destroy(); //TODO: make this non-fixed
+
+		if(_myOutput != null && _myOutput.getState() == OutputState.READY){
+			_myOutput.destroy();
+		}
 	}
 
 
@@ -116,8 +159,7 @@ public class Laserschein {
 		pa.noStroke();
 		pa.text(theFrame.points().size(), 0, 40);
 
-		float myWidth = theFrame.points().size() / 6000f; // TODO: remove
-															// hardcode
+		float myWidth = theFrame.points().size() / 6000f; // TODO: remove hardcode
 		myWidth *= pa.width;
 
 		pa.rectMode(PApplet.CORNER);
@@ -200,12 +242,11 @@ public class Laserschein {
 		}
 
 		if (ppv != null) {
-
 			pa.fill(255, 0, 0);
 			pa.noStroke();
 			pa.text(oldCount, ppv.x * myScale, ppv.y * myScale);
 		}
 	}
-	
+
 
 }

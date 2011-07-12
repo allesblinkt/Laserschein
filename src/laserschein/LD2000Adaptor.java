@@ -27,6 +27,7 @@ import com.sun.jna.*;
 import com.sun.jna.ptr.*;
 import java.util.*;
 
+
 /**
  * Uses the Pangolin SDK to control a Pangolin QM2000 or QM2000.net via Laserschein.
  * Works on windows for now.
@@ -36,12 +37,7 @@ import java.util.*;
  */
 public class LD2000Adaptor extends AbstractLaserOutput {
 
-	private boolean _myIsInitialized = false;
 	private int _myMaxNumberOfPoints = 0;
-
-	private boolean _myIsReady = false;
-
-	private static LD2000Adaptor _myInstance;
 
 	public static int COORDINATE_OFFSET = 8000;
 
@@ -50,29 +46,29 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 	private LD2000Native.PTSTRUCT.ByReference[] _myPoints;
 
 
-	private LD2000Adaptor() {
+
+	public LD2000Adaptor() {
+		super();
 	}
 
-
-	public static LD2000Adaptor getInstance() {
-		if (_myInstance == null) {
-			_myInstance = new LD2000Adaptor();
-		}
-
-		return _myInstance;
-	}
 
 
 	@Override
 	public void initialize() {
-		if (LD2000Native.IS_SUPPORTED_PLATFORM) {
-			Logger.printInfo("LD2000Adaptor.draw", "Initializing");
-			_myIsInitialized = true;
+		
+		if (LD2000Native.state == NativeState.READY) {
+			Logger.printInfo("LD2000Adaptor.initialize", "Initializing");
 			_myInitialize();
-		} else {
-			Logger.printError("LD2000Adaptor.draw", "Platform not supported or LD2000.DLL not found");
-			_myIsInitialized = true;
-			_myIsReady = false;
+		}
+		
+		if (LD2000Native.state == NativeState.UNSUPPORTED_PLATFORM) {
+			Logger.printError("LD2000Adaptor.initialize", "Platform not supported. Only Windows >XP works for now.");
+			_myState = OutputState.UNSUPPORTED_PLATFORM;
+		}
+		
+		if (LD2000Native.state == NativeState.NOT_FOUND) {
+			Logger.printError("LD2000Adaptor.initialize", "The LD2000.dll could not be loaded.");
+			_myState = OutputState.LIBRARY_ERROR;
 		}
 	}
 
@@ -95,7 +91,9 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 		if (myStatus.getValue().intValue() != LD2000Native.LDError.OK.getCode()) {
 			Logger.printError("LD2000Adaptor.initialize", "LD2000 failed to initialize with error code: "
 					+ myStatus.getValue().intValue());
-			_myIsReady = false;
+
+			_myState = OutputState.NO_DEVICES_FOUND;
+
 
 		} else {
 			LD2000Native.SetWorkingScanners(new NativeLong(-1));
@@ -106,7 +104,7 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 
 			_myAllocateMemory();
 
-			_myIsReady = true;
+			_myState = OutputState.READY;
 		}
 
 	}
@@ -158,79 +156,116 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 
 	@Override
 	public void draw(final LaserFrame theFrame) {
-		/* Initialize DLL if not done */
-		if (!_myIsInitialized) {
-			initialize();
+
+		final Vector<LaserPoint> myPoints = theFrame.points();
+
+		/* Point count */
+		final int myNumberOfPoints = myPoints.size();
+
+		if (myNumberOfPoints > _myMaxNumberOfPoints) {
+			Logger.printWarning(
+					"LD2000Adaptor.draw", "Too many points to draw. Maximum number is "
+							+ _myMaxNumberOfPoints
+					);
 		}
 
-		if (_myIsInitialized && _myIsReady) {
-			final Vector<LaserPoint> myPoints = theFrame.points();
+		final int myDisplayedNumberOfPoints = Math.min(myNumberOfPoints, _myMaxNumberOfPoints);
 
-			/* Point count */
-			final int myNumberOfPoints = myPoints.size();
+		/* Create frame structure */
+		_myFrame.NumPoints.setValue(myDisplayedNumberOfPoints);
+		_myFrame.writeField("NumPoints");
 
-			if (myNumberOfPoints > _myMaxNumberOfPoints) {
-				Logger.printWarning(
-						"LD2000Adaptor.draw", "Too many points to draw. Maximum number is "
-								+ _myMaxNumberOfPoints
-						);
+		/* Points */
+		for (int i = 0; i < myDisplayedNumberOfPoints; i++) {
+			final LaserPoint myPoint = myPoints.get(i);
+
+			_myPoints[i].XCoord.setValue(myPoint.x - COORDINATE_OFFSET);
+			_myPoints[i].YCoord.setValue(-myPoint.y + COORDINATE_OFFSET);
+
+			int myStatus = LD2000Native.PT_VECTOR;
+
+			if (myPoint.isCorner) {
+				myStatus += LD2000Native.PT_CORNER;
 			}
 
-			final int myDisplayedNumberOfPoints = Math.min(myNumberOfPoints, _myMaxNumberOfPoints);
-
-			/* Create frame structure */
-			_myFrame.NumPoints.setValue(myDisplayedNumberOfPoints);
-			_myFrame.writeField("NumPoints");
-
-			/* Points */
-			for (int i = 0; i < myDisplayedNumberOfPoints; i++) {
-				final LaserPoint myPoint = myPoints.get(i);
-
-				_myPoints[i].XCoord.setValue(myPoint.x - COORDINATE_OFFSET);
-				_myPoints[i].YCoord.setValue(-myPoint.y + COORDINATE_OFFSET);
-
-				int myStatus = LD2000Native.PT_VECTOR;
-
-				if (myPoint.isCorner) {
-					myStatus += LD2000Native.PT_CORNER;
-				}
-
-				if (myPoint.isBlanked) {
-					myStatus += LD2000Native.PT_TRAVELBLANK;
-					_myPoints[i].RGBValue.setValue(0);
-				} else {
-					_myPoints[i].RGBValue.setValue(myPoint.color);
-				}
-
-				_myPoints[i].Status.setValue(myStatus);
-
-				/* Manually update native memory */
-				_myPoints[i].writeField("XCoord");
-				_myPoints[i].writeField("YCoord");
-				_myPoints[i].writeField("Status");
-				_myPoints[i].writeField("RGBValue");
-
+			if (myPoint.isBlanked) {
+				myStatus += LD2000Native.PT_TRAVELBLANK;
+				_myPoints[i].RGBValue.setValue(0);
+			} else {
+				int myColor = Laser3D.rgbToInt(myPoint.r, myPoint.g, myPoint.b);
+				_myPoints[i].RGBValue.setValue(myColor);
 			}
 
-			/* Send and update */
-			LD2000Native.SetWorkingFrame(new NativeLong(1));
-			LD2000Native.WriteFrameFastEx(_myFrame, _myPoints[0]);
+			_myPoints[i].Status.setValue(myStatus);
 
-			LD2000Native.SetWorkingTracks(new NativeLong(1));
-			LD2000Native.DisplayFrame(new NativeLong(1));
+			/* Manually update native memory */
+			_myPoints[i].writeField("XCoord");
+			_myPoints[i].writeField("YCoord");
+			_myPoints[i].writeField("Status");
+			_myPoints[i].writeField("RGBValue");
 
-			LD2000Native.DisplayUpdate();
 		}
+
+		/* Send and update */
+		LD2000Native.SetWorkingFrame(new NativeLong(1));
+		LD2000Native.WriteFrameFastEx(_myFrame, _myPoints[0]);
+
+		LD2000Native.SetWorkingTracks(new NativeLong(1));
+		LD2000Native.DisplayFrame(new NativeLong(1));
+
+		LD2000Native.DisplayUpdate();
+
 	}
 
+	
 	@Override
 	public void destroy() {
-		if (_myIsInitialized && _myIsReady) {
-			LD2000Native.SetWorkingScanners(new NativeLong(-1)); 
-			LD2000Native.SetWorkingTracks(new NativeLong(-1));
-			LD2000Native.DisplayFrame(new NativeLong(0));
-			LD2000Native.DisplayUpdate();
-		}
+		LD2000Native.SetWorkingScanners(new NativeLong(-1)); 
+		LD2000Native.SetWorkingTracks(new NativeLong(-1));
+		LD2000Native.DisplayFrame(new NativeLong(0));
+		LD2000Native.DisplayUpdate();
+	}
+
+
+
+	@Override
+	public int getMaximumNumberOfPoints() {
+		return _myMaxNumberOfPoints;
+	}
+
+
+
+	@Override
+	public int getScanSpeed() {
+		// TODO implement
+		return 0;
+	}
+
+
+
+	@Override
+	public void setScanSpeed(int theSpeed) {
+		Logger.printWarning(
+				"LD2000Adaptor.setScanSpeed", "Setting the scan speed is not implemented yet. But you" +
+						"can change it in LaserShowDesigner 2000 and save it to the LD2000.ini ..."
+				);
+		
+	}
+
+
+
+	@Override
+	public int getMinumumScanSpeed() {
+		// TODO: implement
+		return 0;
+	}
+
+
+
+	@Override
+	public int getMaximumScanSpeed() {
+		// TODO: implement
+		return 0;
 	}
 
 }

@@ -37,20 +37,24 @@ import com.sun.jna.ptr.NativeLongByReference;
  */
 public class LD2000Native {
 
-	public static boolean IS_SUPPORTED_PLATFORM = false;
+	public static NativeState state = NativeState.UNINITIALIZED;
 
+	
+	/**
+	 * Static initialization, so we do not crash at runtime
+	 */
 	static {
 		if (Platform.isWindows()) {
 			try {
 				Native.register("LD2000");
-				IS_SUPPORTED_PLATFORM = true;
+				 state = NativeState.READY;
 			} catch (Exception e) {
-				IS_SUPPORTED_PLATFORM = false;
+				state = NativeState.NOT_FOUND;
 			} catch (Error e) {
-				IS_SUPPORTED_PLATFORM = false;
+				state = NativeState.NOT_FOUND;
 			}
 		} else {
-			IS_SUPPORTED_PLATFORM = false;
+			state = NativeState.UNSUPPORTED_PLATFORM;
 		}
 	}
 

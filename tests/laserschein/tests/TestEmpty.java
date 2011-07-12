@@ -22,7 +22,7 @@ public class TestEmpty extends PApplet {
 
 		smooth();
 		
-		laser = new Laserschein(this);
+		laser = new Laserschein(this,Laserschein.EASYLASEUSB2);
 		
 	}
 
@@ -33,29 +33,36 @@ public class TestEmpty extends PApplet {
 		Laser3D renderer = laser.renderer();
 		beginRaw(renderer);
 		
-		stroke(255,0,0);
-		translate(width/2, height/2);
-		rotateX(millis() * 0.002f);
-		rotateY(millis() * 0.002123243f);
+		stroke(0,0,255);
+		translate(mouseX, mouseY);
+		noFill(); // important!
+		renderer.noSmooth();
+		
+		laser.output().setScanSpeed(40000);
+
+		
+		println(laser.output().getScanSpeed());
+
+		rectMode(CENTER);
+		rect(0,0,width*0.1f, height*0.1f);
 
 		//scale(abs(sin(millis() * 0.001f)) + 0.5f);
 		
-		renderer.noSmooth();
+	//	renderer.noSmooth();
 
-		box(100);
+		//box(100);
 		
 		
-		renderer.smooth();
+		//renderer.smooth();
 		
 
-		ellipse(0,0,200,200);
+	//	ellipse(0,0,200,200);
 
-		rotateX(HALF_PI);
-		ellipse(0,0,200,200);
-		rotateY(HALF_PI);
-		ellipse(0,0,200,200);
+	//	rotateX(HALF_PI);
+	//	ellipse(0,0,200,200);
+	///	rotateY(HALF_PI);
+	//	ellipse(0,0,200,200);
 		
-		noFill(); // important!
 		endRaw();
 
 	}

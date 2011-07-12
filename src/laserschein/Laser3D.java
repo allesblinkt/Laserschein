@@ -46,13 +46,17 @@ public class Laser3D extends PGraphics2D {
 
 	private Optimizer _myOptimizer;
 
+	private Laserschein _myLaserschein;
 
-	public Laser3D(PApplet thePApplet) {
+
+	public Laser3D(PApplet thePApplet, Laserschein theSchein) {
 		_myGraphic = new LaserGraphic();
 		_myPApplet = thePApplet;
 		_myOptimizer = new Optimizer();
+		_myLaserschein = theSchein;
 	}
 
+	
 	/**
 	 * @see processing.core.PGraphics2D#beginDraw()
 	 * 
@@ -64,6 +68,7 @@ public class Laser3D extends PGraphics2D {
 		_myScale = COORDINATE_RANGE / _myPApplet.width;
 	}
 
+	
 	/**
 	 * @see processing.core.PGraphics#smooth()
 	 * 
@@ -78,6 +83,7 @@ public class Laser3D extends PGraphics2D {
 		smooth = true;
 	}
 
+	
 	/**
 	 * @see processing.core.PGraphics#noSmooth()
 	 * 
@@ -88,11 +94,13 @@ public class Laser3D extends PGraphics2D {
 	public void noSmooth() {
 		smooth = false;
 	}
+	
 
 	@Override
 	public void beginShape(int kind) {
 		_myShape = new Vector<LaserPoint>();
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see processing.core.PGraphics#vertex(float, float)
@@ -104,7 +112,10 @@ public class Laser3D extends PGraphics2D {
 		myPoint.x = (int) (theX * _myScale);
 		myPoint.y = (int) (theY * _myScale);
 	
-		myPoint.color = frgbToInt(strokeR, strokeG, strokeB);
+		myPoint.r = Math.round(strokeR * 255);
+		myPoint.g = Math.round(strokeR * 255);
+		myPoint.b = Math.round(strokeR * 255);
+
 	
 		if (smooth) {
 			myPoint.isCorner = false;
@@ -116,15 +127,18 @@ public class Laser3D extends PGraphics2D {
 	
 	}
 	
+	
 	@Override
 	public void vertex(float theX, float theY, float theZ) {
 		vertex(theX, theY);
 	}
+	
 
 	@Override
 	public void endShape(int mode) {
 		_myGraphic.shapes().add(_myShape);
 	}
+	
 
 	/** 
 	 * @see processing.core.PGraphics2D#endDraw()
@@ -141,6 +155,7 @@ public class Laser3D extends PGraphics2D {
 	@Override
 	public void dispose() {
 	}
+	
 
 	@Override
 	public boolean displayable() {
@@ -152,7 +167,7 @@ public class Laser3D extends PGraphics2D {
 	 * Redraws the last frame
 	 */
 	private void redraw() {
-		LD2000Adaptor.getInstance().draw(this.finalFrame()); // TODO: make this non-fixed
+		_myLaserschein.draw(this.finalFrame());
 	}
 
 
@@ -204,6 +219,7 @@ public class Laser3D extends PGraphics2D {
 	public OptimizerSettings settings(){
 		return _myOptimizer.settings();
 	}
+	
 	
 	/**
 	 * @see laserschein.Optimizer#setSettingsRef()
