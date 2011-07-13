@@ -119,10 +119,10 @@ public class EasylaseUsb2Native {
 		
 		public short x; // 2 bytes, value: 0-4095 (x-coordinate)
 		public short y; // 2 bytes, value: 0-4095 (y-coordinate)
-		public char r;  // 1 byte, value: 0-255 (red)
-		public char g;  // 1 byte, value: 0-255 (green)
-		public char b;  // 1 byte, value: 0-255 (blue)
-		public char i;  // 1 byte, value: 0-255 (intensity)
+		public byte r;  // 1 byte, value: 0-255 (red)
+		public byte g;  // 1 byte, value: 0-255 (green)
+		public byte b;  // 1 byte, value: 0-255 (blue)
+		public byte i;  // 1 byte, value: 0-255 (intensity)
 		
 		public Point() {
 			super();
