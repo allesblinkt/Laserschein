@@ -19,10 +19,10 @@ public class TestEasyLaseUsb2 {
 		
 		x.x = 10;
 		x.y = 10;
-		x.r = 255;
+		x.r = (byte)255;
 		x.g = 0;
 		x.b = 0;
-		x.i = 250;
+		x.i = (byte)250;
 		
 		
 		System.out.println( "Number of cards: " + EasylaseUsb2Native.EasyLaseGetCardNum() );

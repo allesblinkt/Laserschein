@@ -130,7 +130,10 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 		}
 
 		/* Send and update */
-		EasylaseUsb2Native.EasyLaseWriteFrame(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)_myScanSpeed);
+		/* Handshake */
+		if(EasylaseUsb2Native.EasyLaseGetStatus(new IntByReference(_myCardNumber)) == 1) {
+			EasylaseUsb2Native.EasyLaseWriteFrameNR(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)_myScanSpeed, (short)0);
+		}
 		// TODO: Error handling in send...
 	}
 
