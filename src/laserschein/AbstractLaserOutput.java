@@ -29,13 +29,12 @@ package laserschein;
  * 
  * @author allesblinkt
  */
-/**
- * @author dorgl
- *
- */
 public abstract class AbstractLaserOutput {
 	
 	protected OutputState _myState = OutputState.UNINITALIZED;
+	
+	protected int _myScanSpeed = 40000;
+
 	
 	
 	/**
@@ -70,15 +69,24 @@ public abstract class AbstractLaserOutput {
 	 * Get the current scan speed.
 	 * @return The scan speed in PPS
 	 */
-	public abstract int getScanSpeed();
+	public int getScanSpeed() {
+		return _myScanSpeed;
+	}
 	
 	
 	/**
 	 * Set the scan speed for the frames to follow
 	 * @param theSpeed in PPS
 	 */
-	public abstract void setScanSpeed(int theSpeed);
-	
+	public void setScanSpeed(int theSpeed) {
+		if(theSpeed > getMaximumScanSpeed()) {
+			_myScanSpeed = getMaximumScanSpeed();
+		} else if( theSpeed < getMinumumScanSpeed()){
+			_myScanSpeed = getMinumumScanSpeed();
+		} else {
+			_myScanSpeed = theSpeed;
+		}	
+	}	
 	
 	/**
 	 * Query the minimum supported scan speed

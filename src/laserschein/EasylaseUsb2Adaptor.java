@@ -41,7 +41,6 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	private static final int MIN_SPEED = 1000;
 	private static final int MAX_SPEED = 65535;
 
-	private int _myScanSpeed = 40000;
 	private int _myCardNumber = 0;
 	
 	
@@ -126,11 +125,13 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 			_myPoints[i].writeField("g");
 			_myPoints[i].writeField("b");
 			_myPoints[i].writeField("i");
+			
+
 
 		}
 
 		/* Send and update */
-		EasylaseUsb2Native.EasyLaseWriteFrame(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)_myScanSpeed);
+		EasylaseUsb2Native.EasyLaseWriteFrame(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)getScanSpeed());
 		// TODO: Error handling in send...
 	}
 
@@ -151,22 +152,7 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	}
 	
 
-	@Override
-	public int getScanSpeed() {
-		return _myScanSpeed;
-	}
 
-	
-	@Override
-	public void setScanSpeed(int theSpeed) {
-		if(theSpeed > MAX_SPEED) {
-			_myScanSpeed = MAX_SPEED;
-		} else if( theSpeed < MIN_SPEED){
-			_myScanSpeed = MIN_SPEED;
-		} else {
-			_myScanSpeed = theSpeed;
-		}		
-	}
 
 	
 	@Override
@@ -182,13 +168,14 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	
 	
 	private int _myTransformX(int theX) {
-		return (int) PApplet.map(theX, Laser3D.COORDINATE_RANGE,0, 0, 4095);
+		return (int) PApplet.map(theX, LaserPoint.COORDINATE_RANGE,0, 0, 4095);
 	}
 	
 	
 	private int _myTransformY(int theY) {
-		return (int) PApplet.map(theY,  Laser3D.COORDINATE_RANGE,0, 0, 4095);
+		return (int) PApplet.map(theY,  LaserPoint.COORDINATE_RANGE,0, 0, 4095);
 	}
+	
 	
 	
 	private void _myInitialize() {

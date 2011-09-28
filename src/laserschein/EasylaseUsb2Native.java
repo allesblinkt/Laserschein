@@ -115,6 +115,7 @@ public class EasylaseUsb2Native {
 	public static native boolean EasyLaseClose();
 	
 	
+	
 	public static class Point extends Structure {
 		
 		public short x; // 2 bytes, value: 0-4095 (x-coordinate)
@@ -136,4 +137,6 @@ public class EasylaseUsb2Native {
 		public static class ByValue extends Point implements Structure.ByValue {
 		};
 	}
+	
+	
 }

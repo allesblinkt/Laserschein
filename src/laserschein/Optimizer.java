@@ -59,7 +59,7 @@ public class Optimizer {
 		_myLaserGraphic = eliminateDuplicates(theGraphic);
 
 		if (_mySettings.reorderFrame) {
-			_myLaserGraphic = reorderDrawing(_myLaserGraphic);
+			_myLaserGraphic.sort();
 		}
 
 		_myOptimizedFrame = createFrameWithSingleBlanks(_myLaserGraphic);
@@ -67,6 +67,8 @@ public class Optimizer {
 		_myOptimizedFrame = enhanceAngles(_myOptimizedFrame);
 		_myOptimizedFrame = interpolatePoints(_myOptimizedFrame);
 	}
+
+		
 
 
 	private LaserFrame createFrameWithSingleBlanks(final LaserGraphic theGraphic) {
@@ -77,16 +79,16 @@ public class Optimizer {
 
 		for (int i = 0; i < theGraphic.shapes().size(); i++) {
 
-			final Vector<LaserPoint> myShape = theGraphic.shapes().get(i);
-			Vector<LaserPoint> myNextShape = null;
+			final LaserShape myShape = theGraphic.shapes().get(i);
+			LaserShape myNextShape = null;
 
 			if (i < theGraphic.shapes().size() - 1) {
 				myNextShape = theGraphic.shapes().get(i + 1);
 			}
 
 			/* Add blank */
-			if (myShape.size() > 0) {
-				final LaserPoint myPoint = new LaserPoint(myShape.firstElement());
+			if (myShape.points().size() > 0) {
+				final LaserPoint myPoint = new LaserPoint(myShape.start());
 				myPoint.isBlanked = true;
 
 				myFrame.points().add(myPoint);
@@ -95,12 +97,12 @@ public class Optimizer {
 
 			for (int j = 0; j < myShape.size(); j++) {
 
-				final LaserPoint myPoint = myShape.get(j);
+				final LaserPoint myPoint = myShape.points().get(j);
 
 				if (j < myShape.size() - 1) {
-					myNextPoint = myShape.get(j + 1);
+					myNextPoint = myShape.points().get(j + 1);
 				} else if (myNextShape != null && myNextShape.size() > 0) {
-					myNextPoint = myNextShape.firstElement();
+					myNextPoint = myNextShape.start();
 				} else {
 					myNextPoint = null;
 				}
@@ -120,7 +122,7 @@ public class Optimizer {
 			/* Add blank */
 			if (myShape.size() > 0) {
 
-				final LaserPoint myPoint = new LaserPoint(myShape.lastElement());
+				final LaserPoint myPoint = new LaserPoint(myShape.end());
 				myPoint.isBlanked = true;
 
 				myFrame.points().add(myPoint);
@@ -135,16 +137,16 @@ public class Optimizer {
 
 		final LaserGraphic myNewGraphic = new LaserGraphic();
 
-		for (final Vector<LaserPoint> myShape : theGraphic.shapes()) {
+		for (final LaserShape myShape : theGraphic.shapes()) {
 
-			final Vector<LaserPoint> myNewShape = new Vector<LaserPoint>();
+			final LaserShape myNewShape = new LaserShape();
 
 			LaserPoint myLastPoint = null;
-			for (final LaserPoint myPoint : myShape) {
+			for (final LaserPoint myPoint : myShape.points()) {
 				if (myLastPoint != null && myPoint.isCoincided(myLastPoint)) {
 					// Omit the vertex
 				} else {
-					myNewShape.add(myPoint);
+					myNewShape.addPoint(myPoint);
 				}
 
 				myLastPoint = myPoint;
@@ -154,11 +156,6 @@ public class Optimizer {
 		}
 
 		return myNewGraphic;
-	}
-
-
-	private LaserGraphic reorderDrawing(final LaserGraphic theGraphic) {
-		return theGraphic; // TODO: implement
 	}
 
 
@@ -206,7 +203,7 @@ public class Optimizer {
 			}
 
 			/* Add extra points (angle independent) */
-			if (myPoint.isCorner && !_mySettings.analyzeCornerAngles ) {
+			if (myPoint.isCorner ) { // && !_mySettings.analyzeCornerAngles ) {
 
 				int myNumber = _mySettings.extraCornerPoints;
 
@@ -226,51 +223,51 @@ public class Optimizer {
 
 			}
 
-			/* Add extra points (angle dependent) */
-			if (myPoint.isCorner && _mySettings.analyzeCornerAngles) {
-				float myAngle = myPoint.turningAngle;
-
-				int myNumber = _mySettings.extraCornerPoints;
-				int myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
-				
-
-				if (myPreviousPoint == null || myPreviousPoint.isBlanked) {
-					myNumber = _mySettings.extraCornerPointsStart;
-				}
-								
-				if (myNextPoint == null || myNextPoint.isBlanked) {
-					myNumber = _mySettings.extraCornerPointsEnd;
-				}
-				
-				myNumber += myExtraPointCount;
-
-				
-
-				for (int j = 0; j < myNumber; j++) {
-					myNewFrame.points().add(new LaserPoint(myPoint));
-				}
-
-			}
+//			/* Add extra points (angle dependent) */
+//			if (myPoint.isCorner && _mySettings.analyzeCornerAngles) {
+//				float myAngle = myPoint.turningAngle;
+//
+//				int myNumber = _mySettings.extraCornerPoints;
+//				int myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
+//				
+//
+//				if (myPreviousPoint == null || myPreviousPoint.isBlanked) {
+//					myNumber = _mySettings.extraCornerPointsStart;
+//				}
+//								
+//				if (myNextPoint == null || myNextPoint.isBlanked) {
+//					myNumber = _mySettings.extraCornerPointsEnd;
+//				}
+//				
+//				myNumber += myExtraPointCount;
+//
+//				
+//
+//				for (int j = 0; j < myNumber; j++) {
+//					myNewFrame.points().add(new LaserPoint(myPoint));
+//				}
+//
+//			}
 			
 			
 			/* Add extra points for smoot shapes at the end */
 			if (!myPoint.isCorner ) {
-				float myAngle = myPoint.turningAngle;
+				//float myAngle = myPoint.turningAngle;
 
 				int myNumber = 0;
 				
 				int myExtraPointCount = 0;
 				
-				if (myPreviousPoint == null || myPreviousPoint.isBlanked) {
+				//if (myPreviousPoint == null || myPreviousPoint.isBlanked) {
 					myNumber = _mySettings.extraCornerPointsStart;
-					myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
+					//myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
 
-				}
+				//}
 								
-				if (myNextPoint == null || myNextPoint.isBlanked) {
+				//if (myNextPoint == null || myNextPoint.isBlanked) {
 					myNumber = _mySettings.extraCornerPointsEnd;
-					myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
-				}
+					//myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
+				//}
 				
 				myNumber += myExtraPointCount;
 

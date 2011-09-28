@@ -7,5 +7,12 @@
 	<classpathentry kind="lib" path="devlib/jna.jar"/>
 	<classpathentry kind="lib" path="devlib/pde.jar"/>
 	<classpathentry kind="lib" path="devlib/controlP5.jar"/>
+	<classpathentry kind="lib" path="devlib/opengl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="devlib/opengl/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Laserschein/devlib/opengl/macosx"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="devlib/opengl/opengl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

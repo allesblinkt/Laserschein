@@ -30,8 +30,10 @@ package laserschein;
  *
  */
 public class LaserPoint {
+	
+	public static float COORDINATE_RANGE = 16000.0f;
 
-	public int x; // -
+	public int x; 
 	public int y;
 	
 	public int r;
@@ -142,19 +144,19 @@ public class LaserPoint {
 	private float length() {
 		return (float) Math.sqrt(this.x * this.x + this.y * this.y);
 	}
-
-
-	public float distanceSquared(final LaserPoint theOther) {
-		int myX = theOther.x - this.x;
-		int myY = theOther.y - this.y;
-		return myX * myX + myY * myY;
-	}
-
+	
 
 	public float distance(final LaserPoint theOther) {
-		int myX = theOther.x - this.x;
-		int myY = theOther.y - this.y;
+		final int myX = theOther.x - this.x;
+		final int myY = theOther.y - this.y;
 		return (float) Math.sqrt(myX * myX + myY * myY);
+	}
+	
+	
+	public float distanceSquared(final LaserPoint theOther) {
+		final int myX = theOther.x - this.x;
+		final int myY = theOther.y - this.y;
+		return myX * myX + myY * myY;
 	}
 
 

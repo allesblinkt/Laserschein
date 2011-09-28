@@ -24,7 +24,7 @@
 package laserschein;
 
 import laserschein.AbstractLaserOutput.OutputState;
-import processing.core.*;
+import processing.core.PApplet;
 
 /**
  * The main library
@@ -41,8 +41,9 @@ public class Laserschein {
 	private Laser3D _myRenderer;
 
 	private AbstractLaserOutput _myOutput;
+//	private final SimulatorWindow _myControlWindow;
 
-
+	
 
 	/**
 	 * Inits the library "Processing style"
@@ -70,6 +71,9 @@ public class Laserschein {
 		}
 
 		_myRenderer = new Laser3D(_myParent, this);
+		
+	//	_myControlWindow = SimulatorWindow.create();
+
 	}
 	
 	
@@ -171,7 +175,7 @@ public class Laserschein {
 	private void renderPointView(LaserFrame theFrame) {
 		final PApplet pa = _myParent;
 
-		float myScale = pa.width / (float) Laser3D.COORDINATE_RANGE;
+		float myScale = pa.width / (float) LaserPoint.COORDINATE_RANGE;
 
 		pa.noFill();
 
@@ -228,6 +232,7 @@ public class Laserschein {
 				isNew = true;
 			}
 
+			
 			pa.rect(pv.x * myScale, pv.y * myScale, 10, 10);
 
 			if (isNew && ppv != null) {

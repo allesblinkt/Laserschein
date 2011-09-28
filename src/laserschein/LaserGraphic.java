@@ -33,16 +33,79 @@ import java.util.Vector;
  */
 public class LaserGraphic {
 
-	private Vector<Vector<LaserPoint>> _myShapes;
+	private Vector<LaserShape> _myShapes;
 
 
 	public LaserGraphic() {
-		_myShapes = new Vector<Vector<LaserPoint>>();
+		_myShapes = new Vector<LaserShape>();
 	}
 
 
-	public Vector<Vector<LaserPoint>> shapes() {
+	public Vector<LaserShape> shapes() {
 		return _myShapes;
+	}
+	
+	
+	public void sort() {
+		
+		final Vector<LaserShape> myShapes = new Vector<LaserShape>();
+		
+		for(int i = 1; i < _myShapes.size(); i++) {
+			myShapes.add(_myShapes.get(i));
+		}
+		
+		
+		final Vector<LaserShape> mySortedShapes = new Vector<LaserShape>();
+			
+		LaserPoint myLastPoint = null;
+		
+		if(_myShapes.size() > 0) {
+			mySortedShapes.add(_myShapes.get(0));
+			myLastPoint = _myShapes.get(0).end();
+		}
+
+		
+		while(myShapes.size() > 0){
+
+			float myBestDistanceSquared = Float.MAX_VALUE;
+			int myBestIndex = -1;
+			boolean myBestWasReversed = false;
+
+
+			for(int i=0; i < myShapes.size(); i++){
+				final LaserShape myShape = myShapes.get(i);
+
+				float myDistanceSquared = myLastPoint.distanceSquared(myShape.start());
+				if(myDistanceSquared < myBestDistanceSquared){
+					myBestWasReversed = false;
+					myBestDistanceSquared = myDistanceSquared;
+					myBestIndex = i;
+				}
+
+				myDistanceSquared = myLastPoint.distanceSquared(myShape.end());
+				if(myDistanceSquared < myBestDistanceSquared){
+					myBestWasReversed = true;
+					myBestDistanceSquared = myDistanceSquared;
+					myBestIndex = i;			
+				}
+			}
+
+			final LaserShape myLastShape = myShapes.get(myBestIndex);
+
+			if(myBestWasReversed) {
+				myLastShape.reverse();
+			}
+
+			myShapes.remove(myBestIndex);
+			myLastPoint = myLastShape.end();
+			
+			mySortedShapes.add(myLastShape);
+
+
+		}
+		
+		_myShapes.clear();
+		_myShapes.addAll(mySortedShapes);
 	}
 
 

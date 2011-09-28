@@ -1,6 +1,13 @@
 package laserschein.tests;
 
 
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.io.File;
+
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+
 import controlP5.ControlP5;
 import controlP5.Slider;
 import processing.core.PApplet;
@@ -44,14 +51,7 @@ public class TestAdjustSettings extends PApplet {
 		laser = new Laserschein(this);
 
 		svg = loadShape("foo.svg");
-
-
-
-
-
-
-
-
+		
 
 		controlP5 = new ControlP5(this);
 

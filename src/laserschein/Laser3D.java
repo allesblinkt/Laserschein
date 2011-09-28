@@ -23,8 +23,6 @@
  */
 package laserschein;
 
-import java.util.Vector;
-
 import processing.core.*;
 
 /**
@@ -35,12 +33,10 @@ import processing.core.*;
  */
 public class Laser3D extends PGraphics2D {
 
-	public static float COORDINATE_RANGE = 16000.0f;
-
 	private final PApplet _myPApplet;
 	private final LaserGraphic _myGraphic;
 
-	private Vector<LaserPoint> _myShape;
+	private LaserShape _myShape;
 
 	private float _myScale;
 
@@ -65,7 +61,7 @@ public class Laser3D extends PGraphics2D {
 	@Override
 	public void beginDraw() {
 		_myGraphic.reset();
-		_myScale = COORDINATE_RANGE / _myPApplet.width;
+		_myScale = LaserPoint.COORDINATE_RANGE / _myPApplet.width;
 	}
 
 	
@@ -95,10 +91,15 @@ public class Laser3D extends PGraphics2D {
 		smooth = false;
 	}
 	
+	
+	@Override
+	public void ellipse(float arg0, float arg1, float arg2, float arg3) {
+		System.out.println("Foo");	
+	};
 
 	@Override
 	public void beginShape(int kind) {
-		_myShape = new Vector<LaserPoint>();
+		_myShape = new LaserShape();
 	}
 	
 
@@ -113,8 +114,8 @@ public class Laser3D extends PGraphics2D {
 		myPoint.y = (int) (theY * _myScale);
 	
 		myPoint.r = Math.round(strokeR * 255);
-		myPoint.g = Math.round(strokeR * 255);
-		myPoint.b = Math.round(strokeR * 255);
+		myPoint.g = Math.round(strokeG * 255);
+		myPoint.b = Math.round(strokeB * 255);
 
 	
 		if (smooth) {
@@ -123,7 +124,7 @@ public class Laser3D extends PGraphics2D {
 			myPoint.isCorner = true;
 		}
 	
-		_myShape.add(myPoint);
+		_myShape.addPoint(myPoint);
 	
 	}
 	
@@ -136,7 +137,9 @@ public class Laser3D extends PGraphics2D {
 
 	@Override
 	public void endShape(int mode) {
-		_myGraphic.shapes().add(_myShape);
+		if(_myShape.isValid()){
+			_myGraphic.shapes().add(_myShape);
+		}
 	}
 	
 

@@ -23,6 +23,9 @@
  */
 package laserschein;
 
+import laserschein.ui.TweakableSettings;
+import laserschein.ui.Tweaker;
+
 /**
  * Settings for turning graphics into sample points.
  * This will likely be different for every laser system.
@@ -30,60 +33,93 @@ package laserschein;
  * @author allesblinkt
  *
  */
-public class OptimizerSettings {
+public class OptimizerSettings implements TweakableSettings {
 	
 	/**
-	 * <b>Not implemented yet!</b>
+	 * Does a greedy sort on the paths. Also switches direction if needed.
 	 */
+	@Tweaker(name = "Reorder frame", min=0, max=1, description="")
 	public boolean reorderFrame = true; 
 
-	/**
-	 * Adds more points for sharper angles
-	 */
-	public boolean analyzeCornerAngles = true; 
-	
 	
 	/**
-	 * Up to this number of extra points are added to sharp angles
+	 * When is it considered a curve
 	 */
-	public int extraCornerPointsAngleDependent = 3; 	
+	@Tweaker(name = "Smooth angle treshold", min=0, max=10, description="")
+	public int smoothAngleTreshold = 1; 	
 
 	
+	
 	/**
-	 * This amount of points is always added at corners
+	 * How many points should be drawn on closed curves
 	 */
-	public int extraCornerPoints = 6;
+	@Tweaker(name = "Closed overdraw", min=0, max=10, description="")
+	public int closedOverdraw = 1; 	
+
+	
+
 	
 	/**
 	 * This amount of points is always added at the start of a path
 	 */
+	@Tweaker(name = "Extra start", min=0, max=10, description="")
 	public int extraCornerPointsStart = 3; 
+	
+	/**
+	 * This amount of points is always added at corners
+	 */
+	@Tweaker(name = "Extra corner", min=0, max=10, description="")
+	public int extraCornerPoints = 6;
+	
+	/**
+	 * This amount of points is always added at curves
+	 */
+	@Tweaker(name = "Extra corner", min=0, max=10, description="")
+	public int extraCurvePoints = 0;
 	
 	/**
 	 * This amount of points is always added at the end of a path
 	 */
+	@Tweaker(name = "Extra end", min=0, max=10, description="")
 	public int extraCornerPointsEnd = 3; 
 
-	
 	/**
 	 * The maximum distance between individual points. If a distance is smaller 
 	 * than this, it will be subdivided.
 	 */
+	@Tweaker(name = "Maximum Travel", min=0, max=2000, description="")
 	public int maxTravel = 600; 
+
+	/**
+	 * The maximum distance between individual points. If a distance is smaller 
+	 * than this, it will be subdivided.
+	 */
+	@Tweaker(name = "Maximum Travel Blank", min=0, max=8000, description="")
+	public int maxTravelBlank = 8000; 
 
 	
 	/**
 	 * This amount of blanking points is added at the start of a path
 	 */
+	@Tweaker(name="Blanks at Start", min=0, max=20, description="")
 	public int extraBlankPointsStart = 6;
 	
 	
 	/**
 	 * This amount of blanking points is added at the end of a path
 	 */
+	@Tweaker(name="Blanks at End", min=0, max=20, description="")
 	public int extraBlankPointsEnd = 6; 
 
 
+	
+	/**
+	 * Eliminates duplicate points
+	 */
+	@Tweaker(name = "Eliminate duplicates", min=0, max=1, description="")
+	public boolean eliminateDuplicates = true; 
+
+	
 	
 	
 	
