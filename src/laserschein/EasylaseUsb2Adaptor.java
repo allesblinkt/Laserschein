@@ -111,10 +111,10 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 				_myPoints[i].i = 0;
 
 			} else {
-				_myPoints[i].r =  (char)PApplet.constrain(myPoint.r, 0, 255);
-				_myPoints[i].g =  (char)PApplet.constrain(myPoint.g, 0, 255);
-				_myPoints[i].b =  (char)PApplet.constrain(myPoint.b, 0, 255);
-				_myPoints[i].i = 255;
+				_myPoints[i].r =  (byte)PApplet.constrain(myPoint.r, 0, 255);
+				_myPoints[i].g =  (byte)PApplet.constrain(myPoint.g, 0, 255);
+				_myPoints[i].b =  (byte)PApplet.constrain(myPoint.b, 0, 255);
+				_myPoints[i].i =  (byte)255;
 			}
 
 
@@ -131,8 +131,10 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 		}
 
 		/* Send and update */
-		EasylaseUsb2Native.EasyLaseWriteFrame(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)getScanSpeed());
-		// TODO: Error handling in send...
+		/* Handshake */
+		if(EasylaseUsb2Native.EasyLaseGetStatus(new IntByReference(_myCardNumber)) == 1) {
+			EasylaseUsb2Native.EasyLaseWriteFrameNR(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)_myScanSpeed, (short)0);
+		}
 	}
 
 	
