@@ -1,8 +1,11 @@
-package laserschein;
+package laserschein.candidates;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Vector;
+
+import laserschein.LaserFrame;
+import laserschein.LaserPoint;
 
 
 public class LasernetzNetworkManager {

@@ -55,10 +55,46 @@ public class Laserschein {
 	}
 
 	
-	public Laserschein(PApplet theParent, Class theOutputClass){
+	/**
+	 * Lets you choose what output module should be used for the laser output.
+	 * Currently supported are "LD2000" and "Easylase"
+	 * 
+	 * @see Laserschein()
+	 * @param theParent Your PApplet
+	 * @param theOutputClassName Name of the output module
+	 */
+	public Laserschein(PApplet theParent, final String theOutputClassName){
+
+		Class<? extends AbstractLaserOutput> myClass = LD2000Adaptor.class;
+				
+		if(theOutputClassName.equalsIgnoreCase("LD2000")){
+			myClass = LD2000Adaptor.class;
+		} else if(theOutputClassName.equalsIgnoreCase("Easylase")){
+			myClass = EasylaseUsb2Adaptor.class;
+		} else {
+			Logger.printError("Laserschein", "No suitable output module found. Currently LD2000 and Easylase are supported as output modules.");
+		}
+		
+		init(theParent, myClass);
+	}
+	
+		
+	/**
+	 * Init the library and the output module directly. Accepts a class, so you could write your own output module
+	 * 
+	 * @param theParent Your PApplet
+	 * @param theOutputClass The class: e.g.   LD2000Adaptor.class
+	 */
+	public Laserschein(PApplet theParent, Class<? extends AbstractLaserOutput> theOutputClass){
+		init(theParent, theOutputClass);
+	}
+		
+	
+	private void init(final PApplet theParent, final Class<? extends AbstractLaserOutput> theOutputClass) {
 		_myParent = theParent;
 		_myParent.registerDispose(this);
-
+	
+				
 		Logger.printInfo("Laserschein", "Initializing the Laser");
 
 		try {
@@ -70,13 +106,19 @@ public class Laserschein {
 			Logger.printError("Laserschein", "This is not a class supported as an output");
 		}
 
+	
 		_myRenderer = new Laser3D(_myParent, this);
-		
-	//	_myControlWindow = SimulatorWindow.create();
-
+		//	_myControlWindow = SimulatorWindow.create();
 	}
 	
 	
+	
+	
+	/**
+	 * Sends an optimized laser frame to the output.
+	 * 
+	 * @param theFinalFrame
+	 */
 	public void draw(final LaserFrame theFinalFrame) {
 		if(_myOutput != null && _myOutput.getState() == OutputState.READY){
 			_myOutput.draw(theFinalFrame);
@@ -106,6 +148,9 @@ public class Laserschein {
 	
 	
 
+	/**
+	 * @return the output module which is currently being used
+	 */
 	public AbstractLaserOutput output() {
 		return _myOutput;
 	}
@@ -175,8 +220,6 @@ public class Laserschein {
 	private void renderPointView(LaserFrame theFrame) {
 		final PApplet pa = _myParent;
 
-		float myScale = pa.width / (float) LaserPoint.COORDINATE_RANGE;
-
 		pa.noFill();
 
 		pa.stroke(255);
@@ -189,7 +232,7 @@ public class Laserschein {
 				pa.beginShape();
 			}
 
-			pa.vertex(p.x * myScale, p.y * myScale);
+			pa.vertex(screenX(p.x), screenY(p.y));
 		}
 
 		pa.endShape();
@@ -204,7 +247,7 @@ public class Laserschein {
 				pa.beginShape();
 			}
 
-			pa.vertex(p.x * myScale, p.y * myScale);
+			pa.vertex(screenX(p.x), screenY(p.y));
 		}
 
 		pa.endShape();
@@ -233,13 +276,13 @@ public class Laserschein {
 			}
 
 			
-			pa.rect(pv.x * myScale, pv.y * myScale, 10, 10);
+			pa.rect(screenX(pv.x), screenY(pv.y), 10, 10);
 
 			if (isNew && ppv != null) {
 				pa.fill(255, 0, 0);
 				pa.noStroke();
 
-				pa.text(oldCount, ppv.x * myScale, ppv.y * myScale);
+				pa.text(oldCount, screenX(ppv.x), screenY(ppv.y));
 			}
 
 			ppv = pv;
@@ -249,9 +292,22 @@ public class Laserschein {
 		if (ppv != null) {
 			pa.fill(255, 0, 0);
 			pa.noStroke();
-			pa.text(oldCount, ppv.x * myScale, ppv.y * myScale);
+			pa.text(oldCount, screenX(ppv.x), screenY(ppv.y));
 		}
 	}
+	
+	
+	
+	private float screenX(final float theX) {
+		return PApplet.map(theX, -1, 1, 0, _myParent.width);
+	}
+	
+	
+	private float screenY(final float theY) {
+		return PApplet.map(theY, -1, 1, 0, _myParent.height);
+	}
+	
+
 
 
 }

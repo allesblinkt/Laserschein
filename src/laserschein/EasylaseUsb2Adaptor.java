@@ -40,6 +40,8 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	private static final int MAX_POINTS = 16000;
 	private static final int MIN_SPEED = 1000;
 	private static final int MAX_SPEED = 65535;
+	
+	private static final int COORDINATE_RANGE = 4095;
 
 	private int _myCardNumber = 0;
 	
@@ -97,8 +99,8 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 		for (int i = 0; i < myDisplayedNumberOfPoints; i++) {
 			final LaserPoint myPoint = myPoints.get(i);
 
-			int myX = PApplet.constrain(_myTransformX(myPoint.x), 0, 4095);
-			int myY = PApplet.constrain(_myTransformY(myPoint.y), 0, 4095);
+			int myX = PApplet.constrain(_myTransformX(myPoint.x), 0, COORDINATE_RANGE);
+			int myY = PApplet.constrain(_myTransformY(myPoint.y), 0, COORDINATE_RANGE);
 
 			_myPoints[i].x = (short)myX;
 			_myPoints[i].y = (short)myY;
@@ -134,6 +136,8 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 		/* Handshake */
 		if(EasylaseUsb2Native.EasyLaseGetStatus(new IntByReference(_myCardNumber)) == 1) {
 			EasylaseUsb2Native.EasyLaseWriteFrameNR(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)_myScanSpeed, (short)0);
+		} else {
+			
 		}
 	}
 
@@ -169,13 +173,13 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	}
 	
 	
-	private int _myTransformX(int theX) {
-		return (int) PApplet.map(theX, LaserPoint.COORDINATE_RANGE,0, 0, 4095);
+	private int _myTransformX(float theX) {
+		return (int) PApplet.map(theX, -1, 1, 0, COORDINATE_RANGE);
 	}
 	
 	
-	private int _myTransformY(int theY) {
-		return (int) PApplet.map(theY,  LaserPoint.COORDINATE_RANGE,0, 0, 4095);
+	private int _myTransformY(float  theY) {
+		return (int) PApplet.map(theY, -1, 1, 0,  COORDINATE_RANGE);
 	}
 	
 	
@@ -223,7 +227,6 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 			_myPoints[i].i = 0;
 
 			_myPoints[i].setAutoWrite(false); // we do not expect this to be changed by the DLL
-
 		}
 	}
 

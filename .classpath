@@ -2,17 +2,21 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="devlib/core.jar"/>
+	<classpathentry kind="lib" path="devlib/core.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Laserschein"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="devlib/jna.jar"/>
 	<classpathentry kind="lib" path="devlib/pde.jar"/>
 	<classpathentry kind="lib" path="devlib/controlP5.jar"/>
 	<classpathentry kind="lib" path="devlib/opengl/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="devlib/opengl/jogl.jar">
+	<classpathentry kind="lib" path="devlib/opengl/opengl.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Laserschein/devlib/opengl/macosx"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="devlib/opengl/opengl.jar"/>
+	<classpathentry kind="lib" path="devlib/opengl/jogl.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

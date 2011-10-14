@@ -4,12 +4,13 @@ package laserschein.tests;
 import processing.core.PApplet;
 import processing.opengl.PGraphicsOpenGL;
 import laserschein.*;
+import laserschein.ui.ControlWindow;
 
 @SuppressWarnings("serial")
 public class TestAuxWindow extends PApplet {
 
 	Laserschein laser;
-	SimulatorWindow sim;
+	ControlWindow sim;
 
 	public void setup() {
 		size(600, 600, OPENGL);
@@ -17,13 +18,17 @@ public class TestAuxWindow extends PApplet {
 
 		smooth();
 		
-		laser = new Laserschein(this,Laserschein.EASYLASEUSB2);
+		laser = new Laserschein(this, Laserschein.EASYLASEUSB2);
 		
-		sim = SimulatorWindow.create();
+		sim = ControlWindow.create();
 	}
 
 
 	public void draw() {
+		@SuppressWarnings("unused")
+		final PGraphicsOpenGL myGl = (PGraphicsOpenGL)g;
+		
+		
 		background(60);
 		
 		
@@ -76,8 +81,7 @@ public class TestAuxWindow extends PApplet {
 		stroke(random(255),random(255),random(255));
 
 
-		//sim.update(renderer.finalFrame());
-
+		sim.updateFrame(renderer.finalFrame());
 		
 			stroke(255,255,0);
 			ellipse(20,20, 400,400);
@@ -98,8 +102,11 @@ public class TestAuxWindow extends PApplet {
 		float myX = cos(radians(theAngle) * 0.5f) * theLength;
 
 		beginShape();
+		stroke(255,0,0);
 		vertex(-myX, -myY);
+		stroke(0,255,0);
 		vertex(0, 0);
+		stroke(0,0,255);
 		vertex(myX, -myY);
 		endShape();
 
@@ -108,6 +115,17 @@ public class TestAuxWindow extends PApplet {
 		vertex(0, 0);
 		vertex(-myX, myY);
 		endShape(CLOSE);
+	}
+	
+	@Override
+	public void keyPressed() {
+		if(key == 'o') {
+			sim.open();
+		}
+		
+		if(key == 'h') {
+			sim.unopen();
+		}
 	}
 
 

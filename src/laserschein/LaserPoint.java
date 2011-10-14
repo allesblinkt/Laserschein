@@ -30,11 +30,9 @@ package laserschein;
  *
  */
 public class LaserPoint {
-	
-	public static float COORDINATE_RANGE = 16000.0f;
 
-	public int x; 
-	public int y;
+	public float x; 
+	public float y;
 	
 	public int r;
 	public int g;
@@ -70,6 +68,8 @@ public class LaserPoint {
 		this.b = theLaserPoint.b;
 		this.isCorner = theLaserPoint.isCorner;
 		this.isBlanked = theLaserPoint.isBlanked;
+		this.turningAngle = theLaserPoint.turningAngle;
+		
 	}
 
 
@@ -101,7 +101,7 @@ public class LaserPoint {
 	 * @param theC C
 	 * @return angle in radians
 	 */
-	public static float getAngle(LaserPoint theA, LaserPoint theB, LaserPoint theC) {
+	public static float getAngle(final LaserPoint theA, final LaserPoint theB, final LaserPoint theC) {
 
 		final LaserPoint myAB = new LaserPoint(theA);
 		myAB.subtract(theB);
@@ -124,19 +124,19 @@ public class LaserPoint {
 	}
 
 
-	public void add(LaserPoint theOther) {
+	public void add(final LaserPoint theOther) {
 		this.x += theOther.x;
 		this.y += theOther.y;
 	}
 
 
-	public void subtract(LaserPoint theOther) {
+	public void subtract(final LaserPoint theOther) {
 		this.x -= theOther.x;
 		this.y -= theOther.y;
 	}
 
 
-	public float dotProduct(LaserPoint theOther) {
+	public float dotProduct(final LaserPoint theOther) {
 		return this.x * theOther.x + this.y * theOther.y;
 	}
 
@@ -147,15 +147,15 @@ public class LaserPoint {
 	
 
 	public float distance(final LaserPoint theOther) {
-		final int myX = theOther.x - this.x;
-		final int myY = theOther.y - this.y;
+		final float myX = theOther.x - this.x;
+		final float myY = theOther.y - this.y;
 		return (float) Math.sqrt(myX * myX + myY * myY);
 	}
 	
 	
 	public float distanceSquared(final LaserPoint theOther) {
-		final int myX = theOther.x - this.x;
-		final int myY = theOther.y - this.y;
+		final float myX = theOther.x - this.x;
+		final float myY = theOther.y - this.y;
 		return myX * myX + myY * myY;
 	}
 
@@ -170,11 +170,12 @@ public class LaserPoint {
 	public LaserPoint getPointBetween(LaserPoint theOther, float theProgress) {
 		final LaserPoint myNewPoint = new LaserPoint(theOther);
 
-		final int myX = Math.round(this.x + (theOther.x - this.x) * theProgress);
-		final int myY = Math.round(this.y + (theOther.y - this.y) * theProgress);
-
-		myNewPoint.x = myX;
-		myNewPoint.y = myY;
+		myNewPoint.x = this.x + (theOther.x - this.x) * theProgress;
+		myNewPoint.y = this.y + (theOther.y - this.y) * theProgress;
+		
+		myNewPoint.r = Math.round(this.r + (theOther.r - this.r) * theProgress);
+		myNewPoint.g = Math.round(this.g + (theOther.g - this.g) * theProgress);
+		myNewPoint.b = Math.round(this.b + (theOther.b - this.b) * theProgress);
 
 		return myNewPoint;
 	}

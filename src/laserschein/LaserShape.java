@@ -10,6 +10,19 @@ public class LaserShape {
 		_myPoints = new Vector<LaserPoint>();
 	}
 	
+	/**
+	 * Copy constructor
+	 * 
+	 * @param myShape
+	 */
+	public LaserShape(LaserShape theShape) {
+		_myPoints = new Vector<LaserPoint>();
+		
+		for(final LaserPoint myPoint:theShape.points()){
+			this.addPoint(new LaserPoint(myPoint));
+		}
+	}
+
 	public void addPoint(final LaserPoint theLaserPoint) {
 		_myPoints.add(theLaserPoint);
 	}

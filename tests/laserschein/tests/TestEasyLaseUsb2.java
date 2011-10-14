@@ -1,5 +1,6 @@
 package laserschein.tests;
 
+import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
 import laserschein.EasylaseUsb2Native;
 
@@ -11,6 +12,7 @@ public class TestEasyLaseUsb2 {
 	 */
 	public static void main(String[] args) {
 		
+		System.out.println(Platform.is64Bit());
 		
 		
 		int cardNumber = -1;

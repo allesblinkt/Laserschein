@@ -27,6 +27,8 @@ import com.sun.jna.*;
 import com.sun.jna.ptr.*;
 import java.util.*;
 
+import processing.core.PApplet;
+
 
 /**
  * Uses the Pangolin SDK to control a Pangolin QM2000 or QM2000.net via Laserschein.
@@ -40,6 +42,7 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 	private int _myMaxNumberOfPoints = 0;
 
 	public static int COORDINATE_OFFSET = 8000;
+	public static int COORDINATE_RANGE = 16000;
 
 	private LD2000Native.FRAMESTRUCT_EX _myFrame;
 	private LD2000Native.PTSTRUCT.ByReference _myFirstPoint;
@@ -179,8 +182,8 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 		for (int i = 0; i < myDisplayedNumberOfPoints; i++) {
 			final LaserPoint myPoint = myPoints.get(i);
 
-			_myPoints[i].XCoord.setValue(myPoint.x - COORDINATE_OFFSET);
-			_myPoints[i].YCoord.setValue(-myPoint.y + COORDINATE_OFFSET);
+			_myPoints[i].XCoord.setValue(_myTransformX(myPoint.x));
+			_myPoints[i].YCoord.setValue(_myTransformY(myPoint.y));
 
 			int myStatus = LD2000Native.PT_VECTOR;
 
@@ -253,7 +256,6 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 	}
 
 
-
 	@Override
 	public int getMinumumScanSpeed() {
 		// TODO: implement
@@ -261,11 +263,22 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 	}
 
 
-
+	
 	@Override
 	public int getMaximumScanSpeed() {
 		// TODO: implement
 		return 0;
+	}
+	
+	
+	
+	private int _myTransformX(float theX) {
+		return (int) PApplet.map(theX, -1, 1, -COORDINATE_OFFSET, COORDINATE_RANGE);
+	}
+	
+	
+	private int _myTransformY(float  theY) {
+		return (int) PApplet.map(theY, -1, 1, COORDINATE_RANGE, -COORDINATE_RANGE);
 	}
 
 }

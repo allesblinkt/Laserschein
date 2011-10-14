@@ -40,12 +40,18 @@ public class LaserGraphic {
 		_myShapes = new Vector<LaserShape>();
 	}
 
-
+	/**
+	 * @return all the connected shapes the graphic consists of.
+	 * 
+	 */
 	public Vector<LaserShape> shapes() {
 		return _myShapes;
 	}
 	
 	
+	/**
+	 * Performs a greedy sort to minimize the jumps  between the shapes. Also reverses the order sometimes to find better results.
+	 */
 	public void sort() {
 		
 		final Vector<LaserShape> myShapes = new Vector<LaserShape>();

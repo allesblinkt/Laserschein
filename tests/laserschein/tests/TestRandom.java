@@ -21,7 +21,7 @@ public class TestRandom extends PApplet {
 
 		smooth();
 		
-		laser = new Laserschein(this);
+		laser = new Laserschein(this, Laserschein.EASYLASEUSB2);
 		
 	}
 

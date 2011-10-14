@@ -17,7 +17,7 @@ public class TestDrawing extends PApplet {
 
 		size(500, 500, P3D);
 		
-		_mySchein = new Laserschein(this);
+		_mySchein = new Laserschein(this, Laserschein.EASYLASEUSB2);
 	}
 
 

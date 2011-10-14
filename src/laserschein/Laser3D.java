@@ -34,7 +34,8 @@ import processing.core.*;
 public class Laser3D extends PGraphics2D {
 
 	private final PApplet _myPApplet;
-	private final LaserGraphic _myGraphic;
+	
+	private LaserGraphic _myGraphic;
 
 	private LaserShape _myShape;
 
@@ -43,13 +44,20 @@ public class Laser3D extends PGraphics2D {
 	private Optimizer _myOptimizer;
 
 	private Laserschein _myLaserschein;
+	
+	private GeometryCorrector _myGeometryCorrector;
+	
+	private LaserFrame _myOptimizedFrame;
 
 
 	public Laser3D(PApplet thePApplet, Laserschein theSchein) {
 		_myGraphic = new LaserGraphic();
 		_myPApplet = thePApplet;
+		_myGeometryCorrector = new GeometryCorrector();
 		_myOptimizer = new Optimizer();
 		_myLaserschein = theSchein;
+		
+		_myOptimizedFrame = new LaserFrame();
 	}
 
 	
@@ -60,8 +68,8 @@ public class Laser3D extends PGraphics2D {
 	 */
 	@Override
 	public void beginDraw() {
-		_myGraphic.reset();
-		_myScale = LaserPoint.COORDINATE_RANGE / _myPApplet.width;
+		_myGraphic = new LaserGraphic();
+		_myScale = (float) (2.0 /_myPApplet.width);
 	}
 
 	
@@ -110,8 +118,8 @@ public class Laser3D extends PGraphics2D {
 	
 		final LaserPoint myPoint = new LaserPoint();
 	
-		myPoint.x = (int) (theX * _myScale);
-		myPoint.y = (int) (theY * _myScale);
+		myPoint.x = (theX * _myScale) - 1;
+		myPoint.y = (theY * _myScale) - 1;
 	
 		myPoint.r = Math.round(strokeR * 255);
 		myPoint.g = Math.round(strokeG * 255);
@@ -146,10 +154,11 @@ public class Laser3D extends PGraphics2D {
 	/** 
 	 * @see processing.core.PGraphics2D#endDraw()
 	 * 
-	 * The {@link laserschein.Optimizer} kicks in at this point
+	 * The {@link laserschein.Optimizer} kicks in at this point. Also this triggers the drawing of the frame.
 	 */
 	public void endDraw() {
-		_myOptimizer.optimize(_myGraphic);
+		_myGraphic = _myGeometryCorrector.correct(_myGraphic);
+		_myOptimizedFrame = _myOptimizer.optimize(_myGraphic);
 		
 		redraw();
 	}
@@ -212,7 +221,7 @@ public class Laser3D extends PGraphics2D {
 	 * @return
 	 */
 	public LaserFrame finalFrame() {
-		return _myOptimizer.optimizedFrame();
+		return _myOptimizedFrame;
 	}
 	
 	

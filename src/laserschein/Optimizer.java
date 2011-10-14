@@ -36,36 +36,35 @@ import java.util.Vector;
 public class Optimizer {
 
 	private OptimizerSettings _mySettings;
-	private LaserFrame _myOptimizedFrame;
-	private LaserGraphic _myLaserGraphic;
 
 
 	public Optimizer() {
 		_mySettings = new OptimizerSettings();
-		_myOptimizedFrame = new LaserFrame();
 	}
 
 
 	/**
-	 * Does all the magic. The optimized frame can be retrieved 
-	 * with {@link laserschein.Optimizer#optimizedFrame()}
+	 * Does all the magic. 
 	 * 
 	 * @param theGraphic
+	 * @return the optimized frame
 	 */
-	public void optimize(LaserGraphic theGraphic) {
-		_myOptimizedFrame = new LaserFrame();
-		_myLaserGraphic = theGraphic;
+	public LaserFrame optimize(LaserGraphic theGraphic) {
+		LaserFrame myOptimizedFrame = new LaserFrame();
+		
+		LaserGraphic myLaserGraphic = theGraphic;
 
-		_myLaserGraphic = eliminateDuplicates(theGraphic);
+		myLaserGraphic = eliminateDuplicates(theGraphic);
 
 		if (_mySettings.reorderFrame) {
-			_myLaserGraphic.sort();
+			myLaserGraphic.sort();
 		}
 
-		_myOptimizedFrame = createFrameWithSingleBlanks(_myLaserGraphic);
-
-		_myOptimizedFrame = enhanceAngles(_myOptimizedFrame);
-		_myOptimizedFrame = interpolatePoints(_myOptimizedFrame);
+		myOptimizedFrame = createFrameWithSingleBlanks(myLaserGraphic);
+		myOptimizedFrame = enhanceAngles(myOptimizedFrame);
+		myOptimizedFrame = interpolatePoints(myOptimizedFrame);
+		
+		return myOptimizedFrame;
 	}
 
 		
@@ -324,14 +323,6 @@ public class Optimizer {
 		}
 
 		return myNewFrame;
-	}
-
-
-	/**
-	 * @return the frame suited for display on a laser system
-	 */
-	public LaserFrame optimizedFrame() {
-		return _myOptimizedFrame;
 	}
 
 

@@ -21,7 +21,10 @@
  * @author Benjamin Maus (http://www.allesblinkt.com)
  *
  */
-package laserschein;
+package laserschein.candidates;
+
+import laserschein.AbstractLaserOutput;
+import laserschein.LaserFrame;
 
 
 public class LasernetzAdaptor extends AbstractLaserOutput{

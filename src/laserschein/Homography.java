@@ -1,207 +1,157 @@
+/**
+ *  
+ *  Laserschein. interactive ILDA output from processing and java
+ *
+ *  2011 by Benjamin Maus
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ * @author Benjamin Maus (http://www.allesblinkt.com)
+ *
+ */
 package laserschein;
 
+
+import processing.core.PMatrix3D;
 import processing.core.PVector;
 
-
-
+/**
+ * Calculates a homography transformation from four correlated point pairs
+ *
+ */
 public class Homography {
 
-	
-	double[][] matrix;
+	private final HomographyMatrix _myMatrix;	
+	private final HomographyMatrix _myInverseMatrix;
 
-
-    private static final double PERSPECTIVE_DIVIDE_EPSILON = 1.0e-10;
-
-	
-	
 	public Homography( final PVector[] theSources, final PVector[] theDestinations ) {
-		 this(	theSources[0], theSources[1], theSources[2], theSources[3], 
-				theDestinations[0], theDestinations[1],  theDestinations[2],  theDestinations[3]  );
+		 this(	
+				 theSources[0], theSources[1], theSources[2], theSources[3], 
+				 theDestinations[0], theDestinations[1], theDestinations[2], theDestinations[3]
+		);
 	}
 	
-	
+
 	public Homography(	final PVector theSrc1,final PVector theSrc2,final PVector theSrc3,final PVector theSrc4,
-						final PVector theDst1,final PVector theDst2,final PVector theDst3,final PVector theDst4 ) {
-	    double[][] Q= {  
-	    	      {
-	    	        -theSrc1.x, -theSrc1.y, -1, 0, 0, 0, theSrc1.x*theDst1.x, theSrc1.y*theDst1.x, -theDst1.x
-	    	      }
-	    	      , // h11  
-	    	      {  
-	    	        0, 0, 0, -theSrc1.x, -theSrc1.y, -1, theSrc1.x*theDst1.y, theSrc1.y*theDst1.y, -theDst1.y
-	    	      }
-	    	      , // h12  
+			final PVector theDst1,final PVector theDst2,final PVector theDst3,final PVector theDst4 ) {
 
-	    	      {
-	    	        -theSrc2.x, -theSrc2.y, -1, 0, 0, 0, theSrc2.x*theDst2.x, theSrc2.y*theDst2.x, -theDst2.x
-	    	      }
-	    	      , // h13  
-	    	      {  
-	    	        0, 0, 0, -theSrc2.x, -theSrc2.y, -1, theSrc2.x*theDst2.y, theSrc2.y*theDst2.y, -theDst2.y
-	    	      }
-	    	      , // h21  
+		final HomographyMatrix myTmp1;
+		myTmp1 = getQuadToSquare(theSrc1.x, theSrc1.y, theSrc2.x, theSrc2.y, theSrc3.x, theSrc3.y, theSrc4.x, theSrc4.y);
 
-	    	      {
-	    	        -theSrc3.x, -theSrc3.y, -1, 0, 0, 0, theSrc3.x*theDst3.x, theSrc3.y*theDst3.x, -theDst3.x
-	    	      }
-	    	      , // h22  
-	    	      {  
-	    	        0, 0, 0, -theSrc3.x, -theSrc3.y, -1, theSrc3.x*theDst3.y, theSrc3.y*theDst3.y, -theDst3.y
-	    	      }
-	    	      , // h23  
+		final HomographyMatrix myTmp2;
+		myTmp2 = getSquareToQuad(theDst1.x, theDst1.y, theDst2.x, theDst2.y, theDst3.x, theDst3.y, theDst4.x, theDst4.y);
 
-	    	      {
-	    	        -theSrc4.x, -theSrc4.y, -1, 0, 0, 0, theSrc4.x*theDst4.x, theSrc4.y*theDst4.x, -theDst4.x
-	    	      }
-	    	      , // h31  
-	    	      {  
-	    	        0, 0, 0, -theSrc4.x, -theSrc4.y, -1, theSrc4.x*theDst4.y, theSrc4.y*theDst4.y, -theDst4.y
-	    	      } // h32
-	    	    };  
-	    
-	    
-	    double[][] P = gaussian_elimination(Q, 9);  
+		_myMatrix = HomographyMatrix.concatenate(myTmp1, myTmp2);
 
-	    // gaussian elimination gives the results of the equation system  
-	    // in the last column of the original matrix.  
-	    // opengl needs the transposed 4x4 matrix:  
-	    double[][] tmpmatrix= {
-	      { 
-	        P[0][8], P[3][8], 0, P[6][8]
-	      }
-	      , // h11  h21 0 h31  
-	      {
-	        P[1][8], P[4][8], 0, P[7][8]
-	      }
-	      , // h12  h22 0 h32  
-	      {
-	        0, 0, 0, 0
-	      }
-	      , // 0    0   0 0  
-	      {
-	        P[2][8], P[5][8], 0, 1
-	      }
-	    };      // h13  h23 0 h33  
-
-
-	    matrix = tmpmatrix;
-		
+		_myInverseMatrix =  _myMatrix.inverse(); // will get null if there is no inverse
 	}
 	
 	
-	  double[][] gaussian_elimination(double[][] input, int n) {  
-		    // arturo castro - 08/01/2010  
-		    //  
-		    // ported to c from pseudocode in  
-		    // http://en.wikipedia.org/wiki/Gaussian_elimination  
-
-		      double[][] A = input;  
-		    int i = 0;  
-		    int j = 0;  
-		    int m = n-1;  
-		    while (i < m && j < n) {  
-		      // Find pivot in column j, starting in row i:  
-		      int maxi = i;  
-		      for (int k = i+1; k<m; k++) {  
-		        if (Math.abs(A[k][j]) > Math.abs(A[maxi][j])) {  
-		          maxi = k;
-		        }
-		      }  
-		      if (A[maxi][j] != 0) {  
-		        //swap rows i and maxi, but do not change the value of i  
-		        if (i!=maxi)  
-		          for (int k=0;k<n;k++) {  
-		            double aux = A[i][k];  
-		            A[i][k]=A[maxi][k];  
-		            A[maxi][k]=aux;
-		          }  
-		        //Now A[i,j] will contain the old value of A[maxi,j].  
-		        //divide each entry in row i by A[i,j]  
-		        double A_ij=A[i][j];  
-		        for (int k=0;k<n;k++) {  
-		          A[i][k]/=A_ij;
-		        }  
-		        //Now A[i,j] will have the value 1.  
-		        for (int u = i+1; u< m; u++) {  
-		          //subtract A[u,j] * row i from row u  
-		          double A_uj = A[u][j];  
-		          for (int k=0;k<n;k++) {  
-		            A[u][k]-=A_uj*A[i][k];
-		          }  
-		          //Now A[u,j] will be 0, since A[u,j] - A[i,j] * A[u,j] = A[u,j] - 1 * A[u,j] = 0.
-		        }  
-
-		        i++;
-		      }  
-		      j++;
-		    }  
-
-		    //back substitution  
-		    for (int li=m-2;li>=0;li--) {  
-		      for (int lj=li+1;lj<n-1;lj++) {  
-		        A[li][m]-=A[li][lj]*A[lj][m];  
-		        //A[i*n+j]=0;
-		      }
-		    }  
-
-		    return A;
-		  }  
-
-
-
-		  PVector transform(PVector theV) {
-
-		    PVector myResult = new PVector();
-
-
-
-
-
-
-
-		    double w =matrix[0][3] * theV.x +  matrix[1][3] * theV.y + matrix[3][3];
-
-		    myResult.x = (float)((matrix[0][0] * theV.x + matrix[1][0] * theV.y +  matrix[3][0] )/ w);
-		    myResult.y = (float)((matrix[0][1] * theV.x + matrix[1][1] * theV.y +  matrix[3][1] )/ w);
-		    // x = h11*x + h12 * y + h13 / (h31*x + h32*y + h33)
-		    // y = h21*x + h22*y + h23 / (h31*x + h32*y + h33) 
-
-		    return myResult;
-		  }
-		  
-		  
-		  PVector inverseTransform(PVector theV) {
-
-		  double tmp_x = (matrix[1][1] * matrix[3][3] - matrix[3][1] * matrix[1][3]) * theV.x
-		    + (matrix[3][0] * matrix[1][3] - matrix[1][0] * matrix[3][3]) * theV.y
-		    + (matrix[1][0] * matrix[3][1] - matrix[3][0] * matrix[1][1]);
-		  double tmp_y = (matrix[3][1] * matrix[0][3] - matrix[0][1] * matrix[3][3]) *  theV.x
-		    + (matrix[0][0] * matrix[3][3] - matrix[3][0] * matrix[0][3]) * theV.y
-		    + (matrix[3][0] * matrix[0][1] - matrix[0][0] * matrix[3][1]);
-		  double w = (matrix[0][1] * matrix[1][3] - matrix[1][1] * matrix[0][3]) * theV.x
-		    + (matrix[1][0] * matrix[0][3] - matrix[0][0] * matrix[1][3]) * theV.y
-		    + (matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1]);
-
-		  double wabs = w;
-		  if (w < 0) {
-		    wabs = -w;
-		  }
-		  if (wabs < PERSPECTIVE_DIVIDE_EPSILON) {
-		    System.out.println("Pretty small");
-		  }
-
-		  final PVector myResult = new PVector();
-
-		  myResult.x = (float)(tmp_x / w);
-		  myResult.y = (float)(tmp_y / w);
-		  
-		  return myResult;
-		}
-	
-	
-	double[][] modelViewMatrix() {
-		return new double[4][4];
+	public PMatrix3D modelViewMatrix() {
+		final PMatrix3D myM = new PMatrix3D();
+	    
+	    myM.m00 = (float) _myMatrix.m00;  	myM.m10 = (float) _myMatrix.m10;  	myM.m20 = 0;	myM.m30 = (float) _myMatrix.m20;
+	    myM.m01 = (float) _myMatrix.m01;  	myM.m11 = (float) _myMatrix.m11;  	myM.m21 = 0;	myM.m31 = (float) _myMatrix.m21;
+	    myM.m02 = 0;  						myM.m12 = 0;  						myM.m22 = 0;	myM.m32 = 0;
+	    myM.m03 = (float) _myMatrix.m02;  	myM.m13 = (float) _myMatrix.m12;  	myM.m23 = 0;	myM.m33 = (float) _myMatrix.m22;
+	    
+	    return myM;
 	}
 	
 	
+    public PVector transform(final PVector theV) {
+        
+        final double myOrigX = theV.x;
+        final double myOrigY = theV.y;
+        
+        final double myW = _myMatrix.m20 * myOrigX + _myMatrix.m21 * myOrigY + _myMatrix.m22;
+        
+        final double myX = (_myMatrix.m00 * myOrigX + _myMatrix.m01 * myOrigY + _myMatrix.m02) / myW; 
+        final double myY = (_myMatrix.m10 * myOrigX + _myMatrix.m11 * myOrigY + _myMatrix.m12) / myW;
+
+        final PVector myResult = new PVector((float)myX, (float)myY);
+          	 
+             
+        return myResult;
+    }
+    
+    
+    public boolean hasInverse() {
+    	return _myInverseMatrix != null;
+    }
+    
+    
+    public PVector transformInverse(final PVector theV) {
+        
+        final double myOrigX = theV.x;
+        final double myOrigY = theV.y;
+        
+        final double myW = _myInverseMatrix.m20 * myOrigX + _myInverseMatrix.m21 * myOrigY + _myInverseMatrix.m22;
+        
+        final double myX = (_myInverseMatrix.m00 * myOrigX + _myInverseMatrix.m01 * myOrigY + _myInverseMatrix.m02) / myW; 
+        final double myY = (_myInverseMatrix.m10 * myOrigX + _myInverseMatrix.m11 * myOrigY + _myInverseMatrix.m12) / myW;
+
+        final PVector myResult = new PVector((float)myX, (float)myY);
+          	 
+        return myResult;
+    }
+	
+	    
+    public static HomographyMatrix getQuadToSquare(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+        final HomographyMatrix myTransform = getSquareToQuad(x0, y0, x1, y1, x2, y2, x3, y3);
+        myTransform.set(myTransform.adjoint());
+        return myTransform;
+    }
+ 
+	
+    private static final HomographyMatrix getSquareToQuad(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+    	final HomographyMatrix myTransform = new HomographyMatrix();
+    	
+    	double dx3 = x0 - x1 + x2 - x3;
+        double dy3 = y0 - y1 + y2 - y3;
+
+        myTransform.m22 = 1.0F;
+
+        if ((dx3 == 0.0f) && (dy3 == 0.0f)) { 
+        	myTransform.m00 = x1 - x0;
+        	myTransform.m01 = x2 - x1;
+        	myTransform.m02 = x0;
+        	myTransform.m10 = y1 - y0;
+        	myTransform.m11 = y2 - y1;
+        	myTransform.m12 = y0;
+        	myTransform.m20 = 0.0F;
+        	myTransform.m21 = 0.0F;
+        } else {
+            double dx1 = x1 - x2;
+            double dy1 = y1 - y2;
+            double dx2 = x3 - x2;
+            double dy2 = y3 - y2;
+
+            double invdet = 1.0F / (dx1 * dy2 - dx2 * dy1);
+            myTransform.m20 = (dx3 * dy2 - dx2 * dy3) * invdet;
+            myTransform.m21 = (dx1 * dy3 - dx3 * dy1) * invdet;
+            myTransform.m00 = x1 - x0 + myTransform.m20 * x1;
+            myTransform.m01 = x3 - x0 + myTransform.m21 * x3;
+            myTransform.m02 = x0;
+            myTransform.m10 = y1 - y0 + myTransform.m20 * y1;
+            myTransform.m11 = y3 - y0 + myTransform.m21 * y3;
+            myTransform.m12 = y0;
+        }
+        
+        return myTransform;
+    }
+    
+    
 }
