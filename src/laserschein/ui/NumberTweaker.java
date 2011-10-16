@@ -5,23 +5,46 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import processing.core.PApplet;
+
 @SuppressWarnings("serial")
-public class NumberTweaker extends JPanel {
+public class NumberTweaker extends AbstractTweaker<NumberTweaker> {
 	
 	private final JLabel _myLabel;
 	private final JSlider _mySlider;
 	private final JTextField _myTextField;
+	
+	private  float _myMin;
+	private  float _myMax;
+	
+	private NumberFormat _myFormat;
+	
+	private static int DIVISIONS = 100;
 
-	public NumberTweaker(String theTitle, Object theModel) {
-		super(new GridBagLayout());
+	public NumberTweaker(String theTitle, float theDefault, float theMin, float theMax, boolean theIsInt) {
+		
+		_myMin = theMin;
+		_myMax = theMax;
+		
+		
+		
+		if(theIsInt) {
+			_myFormat = NumberFormat.getIntegerInstance();
+		} else {
+			_myFormat = NumberFormat.getNumberInstance();
+		}
+		
+		
+		this.setLayout(new GridBagLayout());
 		
 		this.setOpaque(false);
 		
@@ -35,7 +58,7 @@ public class NumberTweaker extends JPanel {
 		this.add(_myLabel, myConstraints);
 
 	
-		_mySlider = new JSlider(0, 10);
+		_mySlider = new JSlider(0, DIVISIONS);
 		_mySlider.setFocusable(true);
 		_mySlider.setPreferredSize(new Dimension(200, 8));
 		myConstraints.gridwidth = 3;
@@ -54,35 +77,50 @@ public class NumberTweaker extends JPanel {
 		myConstraints.gridx = 3; myConstraints.gridy = 1; 
 		this.add(_myTextField, myConstraints);
 
+		registerSwingListeners();
 		
-		registerListeners();
-		
-		setValue(1);
+		setValue(theDefault, true);
 		
 	}
 	
 	
-	public boolean valueValid(int theValue) {
-		if(theValue <= _mySlider.getMaximum() && theValue >= _mySlider.getMinimum()){
+	
+	private int transformValueToSlider(float theValue) {
+		float myValue = PApplet.map(theValue, _myMin, _myMax, 0, DIVISIONS);;
+		return Math.round(myValue); 
+	}
+	
+	
+	private float transformSliderToValue(int theValue) {
+		float myValue = PApplet.map(theValue, 0, DIVISIONS, _myMin, _myMax);
+		return myValue;
+	}
+	
+	public boolean valueValid(float theValue) {
+		if(theValue <= _myMax && theValue >= _myMin){
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public void setValue(int theValue) {
+	public void setValue(float theValue, boolean theNotify) {
 		if(valueValid(theValue)){
-			_mySlider.setValue(theValue);
-			_myTextField.setText(theValue+"");
+			_mySlider.setValue(transformValueToSlider(theValue));
+			_myTextField.setText(_myFormat.format(theValue));
+			
+			if(theNotify) {
+				notifyListeners();
+			}
 		}
 	}
 	
 	
-	public int getValue() {
-		return _mySlider.getValue();
+	public float getValue() {
+		return transformSliderToValue(_mySlider.getValue());
 	}
 
-	private void registerListeners() {
+	private void registerSwingListeners() {
 		_mySlider.addChangeListener(new ChangeListener() {
 	
 			@Override
@@ -107,23 +145,35 @@ public class NumberTweaker extends JPanel {
 	
 	private void sliderChanged() {
 		final int myValue = _mySlider.getValue();
-		_myTextField.setText(myValue+"");
+		_myTextField.setText(_myFormat.format(transformSliderToValue(myValue)));
+		notifyListeners();
 	}
 
 	
 	
+	private void setTextFieldToSliderValue() {
+		_myTextField.setText(_myFormat.format(transformSliderToValue(_mySlider.getValue())));
+	}
+	
+	
 	private void textChanged() {
 		try {
-			int myValue = Integer.valueOf( _myTextField.getText() );
+			float myValue =  _myFormat.parse( _myTextField.getText() ).floatValue();
 			
-			System.out.println(myValue);
 			
 			if(valueValid(myValue)){
-				_mySlider.setValue(myValue);
+				_mySlider.setValue(transformValueToSlider(myValue));
+				notifyListeners();
+			} else {
+				setTextFieldToSliderValue();
 			}
-			
 		} catch(NumberFormatException e) {
-			_myTextField.setText(_mySlider.getValue()+"");
+			setTextFieldToSliderValue();
+			
+		} catch (ParseException e) {
+			setTextFieldToSliderValue();
+
+
 		}
 	}
 

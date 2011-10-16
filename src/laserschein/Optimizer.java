@@ -204,16 +204,16 @@ public class Optimizer {
 			/* Add extra points (angle independent) */
 			if (myPoint.isCorner ) { // && !_mySettings.analyzeCornerAngles ) {
 
-				int myNumber = _mySettings.extraCornerPoints;
+				int myNumber = _mySettings.extraPointsCorner;
 
 				if (myPreviousPoint == null || myPreviousPoint.isBlanked) {
-					myNumber = _mySettings.extraCornerPointsStart;
+					myNumber = _mySettings.extraPointsStart;
 
 				}
 				
 				
 				if (myNextPoint == null || myNextPoint.isBlanked) {
-					myNumber = _mySettings.extraCornerPointsEnd;
+					myNumber = _mySettings.extraPointsEnd;
 				}
 
 				for (int j = 0; j < myNumber; j++) {
@@ -258,13 +258,13 @@ public class Optimizer {
 				int myExtraPointCount = 0;
 				
 				//if (myPreviousPoint == null || myPreviousPoint.isBlanked) {
-					myNumber = _mySettings.extraCornerPointsStart;
+					myNumber = _mySettings.extraPointsStart;
 					//myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
 
 				//}
 								
 				//if (myNextPoint == null || myNextPoint.isBlanked) {
-					myNumber = _mySettings.extraCornerPointsEnd;
+					myNumber = _mySettings.extraPointsEnd;
 					//myExtraPointCount = (int) ((1f - (myAngle / (float) Math.PI)) * _mySettings.extraCornerPointsAngleDependent);
 				//}
 				
@@ -328,11 +328,6 @@ public class Optimizer {
 
 	public OptimizerSettings settings() {
 		return _mySettings;
-	}
-
-
-	public void setSettingsRef(OptimizerSettings theSettings) {
-		_mySettings = theSettings;
 	}
 
 }

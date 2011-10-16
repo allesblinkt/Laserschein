@@ -6,23 +6,21 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+
+import com.sun.jna.Platform;
 
 
+import laserschein.GeometrySettings;
 import laserschein.LaserFrame;
-import laserschein.OptimizerSettings;
+import laserschein.Laserschein;
+import laserschein.ui.AbstractTweaker.TweakerChangeListener;
 import processing.core.PApplet;
+import processing.core.PVector;
 import processing.opengl.PGraphicsOpenGL;
-
-
-import controlP5.*;
 
 
 @SuppressWarnings("serial")
@@ -37,25 +35,47 @@ public class ControlWindow extends PApplet {
 	private boolean _myDoDrawCorrector = true;
 
 	private Simulator _mySimulator;
-	
+
 	private PickQuad _myPicker;
-	
+
 	private DragManager _myDragManager;
 
-	private ControlP5 _myControls;
-	
-	public static ControlWindow create() {
-		final ControlWindow myApplet = new ControlWindow(500, 500);
+	private Laserschein _mySchein;
+
+	private NumberTweaker _myScaleXSlider;
+
+	private NumberTweaker _myScaleYSlider;
+
+	private BooleanTweaker _myLockScaleSlider;
+
+
+	public static ControlWindow create(final Laserschein theSchein) {
+
+
+		try {
+			if(Platform.isWindows()) {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} else {
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			}
+
+		} catch (Exception e) {
+			// We don't care
+		}
+
+
+
+		final ControlWindow myApplet = new ControlWindow(theSchein, 500, 500);
 		myApplet.init();
-		
+
 		return myApplet;
 	}
 
 
-	private ControlWindow(int theWidth, int theHeight) {
+	private ControlWindow(final Laserschein theSchein, int theWidth, int theHeight) {
 		_myWidth = theWidth;
 		_myHeight = theHeight;
-				
+
 		_myFrame = new Frame("Simulacrum");
 		_myFrame.setFont(new Font(Font.DIALOG, Font.PLAIN, 5));
 		_myFrame.setResizable(false);
@@ -63,79 +83,141 @@ public class ControlWindow extends PApplet {
 
 		_myFrame.setFocusTraversalKeysEnabled(true);
 		_myFrame.setFocusable(true);
+		_mySchein = theSchein;
 
-		JTabbedPane myPane = new JTabbedPane();
-		myPane.setPreferredSize(new Dimension(300, 0));
+		final JTabbedPane myPane = new JTabbedPane();
+		myPane.setPreferredSize(new Dimension(250, 0));
 
-		final JPanel myGeometryPanel = new JPanel();
-		myGeometryPanel.setOpaque(false);
-		myPane.addTab("Geometry", myGeometryPanel);
 
-		// myGeometryPanel.setLayout(new BoxLayout(myGeometryPanel,
-		// BoxLayout.Y_AXIS));
-		// myGeometryPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		//myPane.addTab("Optimizer", constructOptimizerPanel());
+		myPane.addTab("Geometry", constructGeometryPanel());
+		myPane.addTab("Simulation", constructSimulationPanel());
 
-		for (int i = 0; i < 6; i++) {
-			JLabel testlabel = new JLabel("Start", JLabel.LEFT);
-			testlabel.setAlignmentX(JSlider.LEFT_ALIGNMENT);
-			// testlabel.setMaximumSize(new Dimension(100, 20));
-
-			JSlider testslider = new JSlider(0, 10);
-			testslider.setSnapToTicks(true);
-			testslider.setPaintLabels(true);
-
-			testslider.setMajorTickSpacing(5);
-			testslider.setMinorTickSpacing(1);
-
-			testslider.setPaintTicks(true);
-			// testslider.setMaximumSize(new Dimension(100, 20));
-
-			myGeometryPanel.add(testlabel);
-
-			myGeometryPanel.add(testslider);
-			// myGeometryPanel.add(new JSlider());
-		}
-
-		final JPanel myOutputPanel = new JPanel();
-		myOutputPanel.setOpaque(false);
-		myPane.addTab("Output", new JSpinner());
-
-		final JPanel mySimulation = new JPanel();
-		mySimulation.setOpaque(false);
-		myPane.addTab("Simulation", mySimulation);
-
-		SettingsHandler myHandler = new SettingsHandler(new OptimizerSettings());
-		ArrayList<JComponent> myComponents = myHandler.createUIComponents();
-
-		for(final JComponent myComponent:myComponents){
-			mySimulation.add(myComponent);
-
-		}
 
 		_myFrame.add(myPane, BorderLayout.WEST);
 
 		this.setPreferredSize(new Dimension(_myWidth, _myHeight));
 		this.setSize(_myWidth, _myHeight);
-		
-		
+
+
 		_myFrame.add(this);
-		_myFrame.setSize(_myWidth + 200, _myHeight);
+		_myFrame.setSize(_myWidth + 250, _myHeight);
 		_myFrame.setVisible(true);
-		
+
 
 		_myFrame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
 				unopen();
 			}
 		});
-		
-		
+
+
 		_mySimulator = new Simulator();
 	}
 
 
+	private JPanel constructSimulationPanel() {
+		final JPanel mySimulationPanel = new JPanel();
+		mySimulationPanel.setOpaque(false);
+
+		final BooleanTweaker mySimulationShowToggle = new BooleanTweaker("Show", true);
+		mySimulationPanel.add(mySimulationShowToggle);
+		mySimulationShowToggle.addChangeEventListener(new TweakerChangeListener<BooleanTweaker>() {
+
+			@Override
+			public void changed(BooleanTweaker theTweaker) {
+				_myDoDrawSimulation = theTweaker.getValue();
+			}
+		});
+
+		return mySimulationPanel;
+	}
+
+
+
+	private void updateOptimizerSettingsFromUi() {
+		synchronized(_mySchein.optimizer()) {
+
+		}
+	}
+
+	private void updateOptimizerUiFromSettings() {
+		synchronized(_mySchein.optimizer()) {
+
+		}
+	}
+
+
+	private void updateGeometrySettingsFromUi() {
+		synchronized(_mySchein.geometry()) {
+			final GeometrySettings mySettings = _mySchein.geometry().settings();
+
+			mySettings.homographyDestination1.set(_myPicker.corner1.rawX(), _myPicker.corner1.rawY(), 0);
+			mySettings.homographyDestination2.set(_myPicker.corner2.rawX(), _myPicker.corner2.rawY(), 0);
+			mySettings.homographyDestination3.set(_myPicker.corner3.rawX(), _myPicker.corner3.rawY(), 0);
+			mySettings.homographyDestination4.set(_myPicker.corner4.rawX(), _myPicker.corner4.rawY(), 0);
+
+			mySettings.offset.set(_myPicker.offset);
+			mySettings.scale.set(_myScaleXSlider.getValue(), _myScaleYSlider.getValue(), 0);
+
+
+			_mySchein.geometry().updateTransforms();
+		}
+	}
+
+	private void updateGeometryUiFromSettings() {
+		synchronized(_mySchein.geometry()) {
+
+		}
+	}
+
+
+	private JPanel constructGeometryPanel() {
+		final JPanel myGeometryPanel = new JPanel();
+		myGeometryPanel.setOpaque(false);
+
+		_myScaleXSlider = new NumberTweaker("Scale X", 0, 0, 1, false); //TODO: read from settings
+		_myScaleXSlider.addChangeEventListener(new TweakerChangeListener<NumberTweaker>() {
+
+			@Override
+			public void changed(NumberTweaker theTweaker) {
+
+				if(_myLockScaleSlider.getValue()) {
+					_myScaleYSlider.setValue(_myScaleXSlider.getValue(), false);
+				}
+
+				updateGeometrySettingsFromUi();
+
+			}
+		});
+		myGeometryPanel.add(_myScaleXSlider);
+
+		_myScaleYSlider = new NumberTweaker("Scale Y", 1, 0, 1, false); //TODO: read from settings
+		_myScaleYSlider.addChangeEventListener(new TweakerChangeListener<NumberTweaker>() {
+
+			@Override
+			public void changed(NumberTweaker theTweaker) {
+
+				System.out.println("SildeY");
+
+				if(_myLockScaleSlider.getValue()) {
+					_myScaleXSlider.setValue(_myScaleYSlider.getValue(), false);
+				}
+
+				updateGeometrySettingsFromUi();
+
+			}
+		});
+		myGeometryPanel.add(_myScaleYSlider);
+
+		_myLockScaleSlider = new BooleanTweaker("Lock", true);
+
+		return myGeometryPanel;
+	}
+
+
 	public void updateFrame(final LaserFrame theFrame) {
-		if(_myFrame.isVisible()){
+		if(_myFrame.isVisible() && _myDoDrawSimulation){
 			_mySimulator.update(theFrame);	
 		}
 	}
@@ -147,110 +229,94 @@ public class ControlWindow extends PApplet {
 		frameRate(60);
 
 		smooth();
-		
+
 		_myPicker = new PickQuad();
 		_myDragManager = new DragManager();
-		
+
 		_myDragManager.add(_myPicker); // precedence
 		_myDragManager.add(_myPicker.corner1);
 		_myDragManager.add(_myPicker.corner2);
 		_myDragManager.add(_myPicker.corner3);
 		_myDragManager.add(_myPicker.corner4);
-		
-		
-		_myControls = new ControlP5(this);
-		buildControls();
-		
+
+
 	}
 
 
-	private void buildControls() {
 
-		Slider mySlider =_myControls.addSlider("foo", 0, 9);
-		Slider mySlider2 =_myControls.addSlider("foo2", 0, 9);
-		
-		
-		_myControls.disableKeys();
-		_myControls.setAutoDraw(false);
-
-	}
 
 
 	public void draw() {
-		
+
 		@SuppressWarnings("unused")
 		final PGraphicsOpenGL myGl = (PGraphicsOpenGL)g;
-		
-		
+
+
 		background(10);
-		
+
 		pushMatrix();
-		
+
 		scale(width*0.5f, height*0.5f);
 		translate(1,1);
-				
+
 		if(_myDoDrawSimulation){
 			_mySimulator.draw(g);
 		}
-		
+
 		if(_myDoDrawCorrector){
 			_myDragManager.draw();
 			drawCorrector();	
 		}
-		
+
 		popMatrix();
-		
-		drawGui();
+
 	}
-	
-	
-	private void drawGui() {
-		  hint(DISABLE_DEPTH_TEST);
-		  _myControls.draw();
-		  
-		  hint(ENABLE_DEPTH_TEST);
-	}
-	
-	
+
+
+
 	private void drawCorrector() {
 		_myPicker.draw(g);
 	}
-	
-	
+
+
 	@Override
 	public void mousePressed() {
 		_myDragManager.pressed(mapMouseX(mouseX), mapMouseY(mouseY));
+		updateGeometrySettingsFromUi();
+
 	}
-	
-	
+
+
 	@Override
 	public void mouseReleased() {
 		_myDragManager.released();
+		updateGeometrySettingsFromUi();
+
 	}
-	
-	
+
+
 	@Override
 	public void mouseDragged() {
 		_myDragManager.dragged(mapMouseX(mouseX), mapMouseY(mouseY));
-	}
-	
-	
-	@Override
-	public void keyPressed() {
-		println("key pressed");
+		updateGeometrySettingsFromUi();
 	}
 
-	
+
+	@Override
+	public void keyPressed() {
+	}
+
+
 	float mapMouseX(float theX) {
 		return map(mouseX, 0, width, -1, 1);
 	}
-	
-	
+
+
 	float mapMouseY(float theY) {
 		return map(mouseY, 0, height, -1, 1);
 	}
-	
-	
+
+
 	public void open() {
 		_myFrame.setVisible(true);
 		loop();
@@ -261,5 +327,5 @@ public class ControlWindow extends PApplet {
 		noLoop();
 		_myFrame.setVisible(false);
 	}
-	
+
 }

@@ -75,6 +75,15 @@ public class DragCorner implements Draggable {
 	}
 	
 	
+	public float rawX() {
+		return _myX;
+	}   
+	
+	public float rawY() {
+		return _myY;
+	}   
+	
+	
 	public float x() {
 		return _myX + _myParent.offset.x;
 	}   

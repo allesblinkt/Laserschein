@@ -40,12 +40,8 @@ public class Laser3D extends PGraphics2D {
 	private LaserShape _myShape;
 
 	private float _myScale;
-
-	private Optimizer _myOptimizer;
-
-	private Laserschein _myLaserschein;
 	
-	private GeometryCorrector _myGeometryCorrector;
+	private Laserschein _myLaserschein;
 	
 	private LaserFrame _myOptimizedFrame;
 
@@ -53,8 +49,7 @@ public class Laser3D extends PGraphics2D {
 	public Laser3D(PApplet thePApplet, Laserschein theSchein) {
 		_myGraphic = new LaserGraphic();
 		_myPApplet = thePApplet;
-		_myGeometryCorrector = new GeometryCorrector();
-		_myOptimizer = new Optimizer();
+
 		_myLaserschein = theSchein;
 		
 		_myOptimizedFrame = new LaserFrame();
@@ -157,8 +152,14 @@ public class Laser3D extends PGraphics2D {
 	 * The {@link laserschein.Optimizer} kicks in at this point. Also this triggers the drawing of the frame.
 	 */
 	public void endDraw() {
-		_myGraphic = _myGeometryCorrector.correct(_myGraphic);
-		_myOptimizedFrame = _myOptimizer.optimize(_myGraphic);
+		
+		synchronized (_myLaserschein.geometry()) {
+			_myGraphic = _myLaserschein.geometry().correct(_myGraphic);
+		}
+		
+		synchronized (_myLaserschein.optimizer()) {
+			_myOptimizedFrame = _myLaserschein.optimizer().optimize(_myGraphic);
+		}
 		
 		redraw();
 	}
@@ -225,20 +226,4 @@ public class Laser3D extends PGraphics2D {
 	}
 	
 	
-	/**
-	 * @see laserschein.Optimizer#settings()
-	 */
-	public OptimizerSettings settings(){
-		return _myOptimizer.settings();
-	}
-	
-	
-	/**
-	 * @see laserschein.Optimizer#setSettingsRef()
-	 */
-	public void setSettingsRef(OptimizerSettings theSettings) {
-		_myOptimizer.setSettingsRef(theSettings);
-	}
-
-
 }

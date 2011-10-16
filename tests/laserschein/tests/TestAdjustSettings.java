@@ -1,13 +1,5 @@
 package laserschein.tests;
 
-
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.io.File;
-
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-
 import controlP5.ControlP5;
 import controlP5.Slider;
 import processing.core.PApplet;
@@ -58,21 +50,21 @@ public class TestAdjustSettings extends PApplet {
 		OptimizerSettings settings = laser.settings();
 
 
-		sliderAngleCornerPoints = controlP5.addSlider("angleCornerPoints", 0, 20, settings.extraCornerPointsAngleDependent, 10, 40, 100, 20);
-		sliderAngleCornerPoints.setNumberOfTickMarks(21);
-		sliderAngleCornerPoints.snapToTickMarks(true);
+//		sliderAngleCornerPoints = controlP5.addSlider("angleCornerPoints", 0, 20, settings.extraCornerPointsAngleDependent, 10, 40, 100, 20);
+//		sliderAngleCornerPoints.setNumberOfTickMarks(21);
+//		sliderAngleCornerPoints.snapToTickMarks(true);
 
 
-		sliderExtraCornerPoints = controlP5.addSlider("extraCornerPoints", 0, 20, settings.extraCornerPoints, 10, 70, 100, 20);
+		sliderExtraCornerPoints = controlP5.addSlider("extraCornerPoints", 0, 20, settings.extraPointsCorner, 10, 70, 100, 20);
 		sliderExtraCornerPoints.setNumberOfTickMarks(21);
 		sliderExtraCornerPoints.snapToTickMarks(true);
 
 
-		sliderExtraCornerPointsStart = controlP5.addSlider("extraCornerPointsStart", 0, 20, settings.extraCornerPointsStart, 10, 100, 100, 20);
+		sliderExtraCornerPointsStart = controlP5.addSlider("extraCornerPointsStart", 0, 20, settings.extraPointsStart, 10, 100, 100, 20);
 		sliderExtraCornerPointsStart.setNumberOfTickMarks(21);
 		sliderExtraCornerPointsStart.snapToTickMarks(true);
 
-		sliderExtraCornerPointsEnd = controlP5.addSlider("extraCornerPointsEnd", 0, 20, settings.extraCornerPointsEnd, 10, 130, 100, 20);
+		sliderExtraCornerPointsEnd = controlP5.addSlider("extraCornerPointsEnd", 0, 20, settings.extraPointsEnd, 10, 130, 100, 20);
 		sliderExtraCornerPointsEnd.setNumberOfTickMarks(21);
 		sliderExtraCornerPointsEnd.snapToTickMarks(true);
 
@@ -93,10 +85,10 @@ public class TestAdjustSettings extends PApplet {
 
 
 	public void applySliders(){
-		laser.settings().extraCornerPointsAngleDependent = (int) sliderAngleCornerPoints.value();
-		laser.settings().extraCornerPoints = (int) sliderExtraCornerPoints.value();
-		laser.settings().extraCornerPointsStart = (int) sliderExtraCornerPointsStart.value();
-		laser.settings().extraCornerPointsEnd = (int) sliderExtraCornerPointsEnd.value();
+//		laser.settings().extraCornerPointsAngleDependent = (int) sliderAngleCornerPoints.value();
+		laser.settings().extraPointsCorner = (int) sliderExtraCornerPoints.value();
+		laser.settings().extraPointsStart = (int) sliderExtraCornerPointsStart.value();
+		laser.settings().extraPointsEnd = (int) sliderExtraCornerPointsEnd.value();
 
 		laser.settings().extraBlankPointsStart = (int) sliderExtraBlanksStart.value();
 		laser.settings().extraBlankPointsEnd = (int) sliderExtraBlanksEnd.value();

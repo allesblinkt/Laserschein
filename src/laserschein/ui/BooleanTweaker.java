@@ -2,16 +2,17 @@ package laserschein.ui;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 @SuppressWarnings("serial")
-public class BooleanTweaker extends JPanel {
+public class BooleanTweaker extends AbstractTweaker<BooleanTweaker> {
 	
 	private final JLabel _myLabel;
 	private final JCheckBox _myCheckbox;
 
-	public BooleanTweaker(String theTitle, Object theModel) {
+	public BooleanTweaker(String theTitle, boolean theDefault) {
 		super();
 		
 		this.setOpaque(false);
@@ -22,20 +23,29 @@ public class BooleanTweaker extends JPanel {
 		this.add(_myLabel);
 
 		_myCheckbox = new JCheckBox();
+		_myCheckbox.setSelected(theDefault);
 		_myCheckbox.setFocusable(true);
 		
-		this.add(_myCheckbox);
-
+		this.add(_myCheckbox);		
 		
-		registerListeners();
 		
+		_myCheckbox.addChangeListener(new ChangeListener() {	
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				notifyListeners();
+			}
+		});
 		
 	}
 	
 	
 	
-	public void setValue(boolean theValue) {
+	public void setValue(boolean theValue, boolean theNotify) {
 		_myCheckbox.setSelected(true);
+		
+		if(theNotify) {
+			notifyListeners();
+		}
 	}
 	
 	
@@ -43,17 +53,7 @@ public class BooleanTweaker extends JPanel {
 		return _myCheckbox.isSelected();
 	}
 
-	private void registerListeners() {
-	
-		
-		
-	}
-	
-	
-	
-	
-	
-	
+
 	
 
 }

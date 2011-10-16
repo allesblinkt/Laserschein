@@ -23,8 +23,7 @@
  */
 package laserschein;
 
-import laserschein.ui.TweakableSettings;
-import laserschein.ui.Tweaker;
+import processing.xml.XMLElement;
 
 /**
  * Settings for turning graphics into sample points.
@@ -38,86 +37,167 @@ public class OptimizerSettings implements TweakableSettings {
 	/**
 	 * Does a greedy sort on the paths. Also switches direction if needed.
 	 */
-	@Tweaker(name = "Reorder frame", min=0, max=1, description="")
 	public boolean reorderFrame = true; 
 
 	
 	/**
+	 * Eliminates duplicate points
+	 */
+	public boolean eliminateDuplicates = true;
+	
+	
+	/**
 	 * When is it considered a curve
 	 */
-	@Tweaker(name = "Smooth angle treshold", min=0, max=10, description="")
 	public int smoothAngleTreshold = 1; 	
-
 	
 	
 	/**
 	 * How many points should be drawn on closed curves
 	 */
-	@Tweaker(name = "Closed overdraw", min=0, max=10, description="")
 	public int closedOverdraw = 1; 	
-
-	
-
 	
 	/**
 	 * This amount of points is always added at the start of a path
 	 */
-	@Tweaker(name = "Extra start", min=0, max=10, description="")
-	public int extraCornerPointsStart = 3; 
+	public int extraPointsStart = 3; 
 	
 	/**
 	 * This amount of points is always added at corners
 	 */
-	@Tweaker(name = "Extra corner", min=0, max=10, description="")
-	public int extraCornerPoints = 6;
+	public int extraPointsCorner = 6;
 	
 	/**
 	 * This amount of points is always added at curves
 	 */
-	@Tweaker(name = "Extra corner", min=0, max=10, description="")
-	public int extraCurvePoints = 0;
+	public int extraPointsCurve = 0;
 	
 	/**
 	 * This amount of points is always added at the end of a path
 	 */
-	@Tweaker(name = "Extra end", min=0, max=10, description="")
-	public int extraCornerPointsEnd = 3; 
+	public int extraPointsEnd = 3; 
 
 	/**
 	 * The maximum distance between individual points. If a distance is smaller 
 	 * than this, it will be subdivided.
 	 */
-	@Tweaker(name = "Maximum Travel", min=0, max=2000, description="")
-	public int maxTravel = 600; 
+	public float maxTravel = 600; 
 
 	/**
 	 * The maximum distance between individual points. If a distance is smaller 
 	 * than this, it will be subdivided.
 	 */
-	@Tweaker(name = "Maximum Travel Blank", min=0, max=8000, description="")
-	public int maxTravelBlank = 8000; 
+	public float maxTravelBlank = 8000; 
 
 	
 	/**
 	 * This amount of blanking points is added at the start of a path
 	 */
-	@Tweaker(name="Blanks at Start", min=0, max=20, description="")
 	public int extraBlankPointsStart = 6;
 	
 	
 	/**
 	 * This amount of blanking points is added at the end of a path
 	 */
-	@Tweaker(name="Blanks at End", min=0, max=20, description="")
 	public int extraBlankPointsEnd = 6; 
 
 
 	
-	/**
-	 * Eliminates duplicate points
-	 */
-	@Tweaker(name = "Eliminate duplicates", min=0, max=1, description="")
-	public boolean eliminateDuplicates = true; 
+
+
+
+	@Override
+	public void loadFromXml(final XMLElement theXml) {
+		final XMLElement myXml = theXml;
+		
+		final XMLElement myOptimize = myXml.getChild("optimize");
+		reorderFrame = myOptimize.getBoolean("reorder", reorderFrame);
+		eliminateDuplicates = myOptimize.getBoolean("duplicates", reorderFrame);
+
+		
+		final XMLElement mySmooth = myXml.getChild("smooth");
+		smoothAngleTreshold = mySmooth.getInt("angle", smoothAngleTreshold);
+	
+		
+		final XMLElement myClosed = myXml.getChild("closed");
+		closedOverdraw = myClosed.getInt("overdraw", closedOverdraw);
+		
+		
+		final XMLElement myExtra = myXml.getChild("extra");
+		extraPointsStart = myExtra.getInt("start", extraPointsStart);
+		extraPointsCorner = myExtra.getInt("corner", extraPointsCorner);
+		extraPointsCurve = myExtra.getInt("curve", extraPointsCurve);
+		extraPointsEnd = myExtra.getInt("end", extraPointsEnd);
+	
+				
+		final XMLElement myBlanks = myXml.getChild("blanks");
+		extraBlankPointsStart = myBlanks.getInt("start", extraBlankPointsStart);
+		extraBlankPointsEnd = myBlanks.getInt("end", extraBlankPointsEnd);
+
+		
+		final XMLElement myTravel = myXml.getChild("travel");
+		maxTravel = myTravel.getFloat("drawing", maxTravel);
+		maxTravelBlank = myTravel.getFloat("blank", maxTravelBlank);
+	}
+
+
+
+	@Override
+	public XMLElement toXML() {
+		final XMLElement myXml = new XMLElement();
+		myXml.setName(this.xmlNamespace());
+				
+		final XMLElement myOptimize = new XMLElement();
+		myOptimize.setName("optimize");
+		myOptimize.setBoolean("reorder", reorderFrame);
+		myOptimize.setBoolean("duplicates", eliminateDuplicates);
+		myXml.addChild(myOptimize);
+
+		
+		final XMLElement mySmooth = new XMLElement();
+		mySmooth.setName("smooth");
+		mySmooth.setInt("angle", smoothAngleTreshold);
+		myXml.addChild(mySmooth);
+
+		
+		final XMLElement myClosed = new XMLElement();
+		myClosed.setName("closed");
+		myClosed.setInt("overdraw", closedOverdraw);
+		myXml.addChild(myClosed);
+
+		
+		final XMLElement myExtra = new XMLElement();
+		myExtra.setName("extra");
+		myExtra.setInt("start", extraPointsStart);
+		myExtra.setInt("corner", extraPointsCorner);
+		myExtra.setInt("curve", extraPointsCurve);
+		myExtra.setInt("end", extraPointsEnd);
+		myXml.addChild(myExtra);
+
+		
+		final XMLElement myBlanks = new XMLElement();
+		myBlanks.setName("blanks");
+		myBlanks.setInt("start", extraBlankPointsStart);
+		myBlanks.setInt("end", extraBlankPointsEnd);
+		myXml.addChild(myBlanks);
+
+		
+		final XMLElement myTravel = new XMLElement();
+		myTravel.setName("travel");
+		myTravel.setFloat("drawing", maxTravel);
+		myTravel.setFloat("blank", maxTravelBlank);
+		myXml.addChild(myTravel);
+
+		
+		return myXml;
+	}
+
+
+
+	@Override
+	public String xmlNamespace() {
+		return "optimizer";
+	} 
 
 	
 	

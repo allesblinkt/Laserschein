@@ -20,7 +20,13 @@ public class TestAuxWindow extends PApplet {
 		
 		laser = new Laserschein(this, Laserschein.EASYLASEUSB2);
 		
-		sim = ControlWindow.create();
+		sim = ControlWindow.create(laser);
+		
+		laser.loadSettings("foo.xml");
+
+		laser.saveSettings("foo.xml");
+
+	
 	}
 
 
@@ -30,6 +36,8 @@ public class TestAuxWindow extends PApplet {
 		
 		
 		background(60);
+		
+		
 		
 		
 		

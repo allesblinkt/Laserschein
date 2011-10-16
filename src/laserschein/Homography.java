@@ -45,7 +45,7 @@ public class Homography {
 	
 
 	public Homography(	final PVector theSrc1,final PVector theSrc2,final PVector theSrc3,final PVector theSrc4,
-			final PVector theDst1,final PVector theDst2,final PVector theDst3,final PVector theDst4 ) {
+		final PVector theDst1,final PVector theDst2,final PVector theDst3,final PVector theDst4 ) {
 
 		final HomographyMatrix myTmp1;
 		myTmp1 = getQuadToSquare(theSrc1.x, theSrc1.y, theSrc2.x, theSrc2.y, theSrc3.x, theSrc3.y, theSrc4.x, theSrc4.y);
@@ -59,14 +59,16 @@ public class Homography {
 	}
 	
 	
-	public PMatrix3D modelViewMatrix() {
+	public PMatrix3D tansformationMatrix() {
+	
 		final PMatrix3D myM = new PMatrix3D();
+			
 	    
 	    myM.m00 = (float) _myMatrix.m00;  	myM.m10 = (float) _myMatrix.m10;  	myM.m20 = 0;	myM.m30 = (float) _myMatrix.m20;
 	    myM.m01 = (float) _myMatrix.m01;  	myM.m11 = (float) _myMatrix.m11;  	myM.m21 = 0;	myM.m31 = (float) _myMatrix.m21;
 	    myM.m02 = 0;  						myM.m12 = 0;  						myM.m22 = 0;	myM.m32 = 0;
 	    myM.m03 = (float) _myMatrix.m02;  	myM.m13 = (float) _myMatrix.m12;  	myM.m23 = 0;	myM.m33 = (float) _myMatrix.m22;
-	    
+	    	    
 	    return myM;
 	}
 	
@@ -82,17 +84,11 @@ public class Homography {
         final double myY = (_myMatrix.m10 * myOrigX + _myMatrix.m11 * myOrigY + _myMatrix.m12) / myW;
 
         final PVector myResult = new PVector((float)myX, (float)myY);
-          	 
-             
+          	             
         return myResult;
     }
     
-    
-    public boolean hasInverse() {
-    	return _myInverseMatrix != null;
-    }
-    
-    
+   
     public PVector transformInverse(final PVector theV) {
         
         final double myOrigX = theV.x;
@@ -107,47 +103,54 @@ public class Homography {
           	 
         return myResult;
     }
+    
+    
+    
+    public boolean hasInverse() {
+    	return _myInverseMatrix != null;
+    }
+    
 	
 	    
-    public static HomographyMatrix getQuadToSquare(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
-        final HomographyMatrix myTransform = getSquareToQuad(x0, y0, x1, y1, x2, y2, x3, y3);
+    public static HomographyMatrix getQuadToSquare(double theX0, double theY0, double theX1, double theY1, double theX2, double theY2, double theX3, double theY3) {
+        final HomographyMatrix myTransform = getSquareToQuad(theX0, theY0, theX1, theY1, theX2, theY2, theX3, theY3);
         myTransform.set(myTransform.adjoint());
         return myTransform;
     }
  
 	
-    private static final HomographyMatrix getSquareToQuad(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+    private static final HomographyMatrix getSquareToQuad(double theX0, double theY0, double theX1, double theY1, double theX2, double theY2, double theX3, double theY3) {
     	final HomographyMatrix myTransform = new HomographyMatrix();
     	
-    	double dx3 = x0 - x1 + x2 - x3;
-        double dy3 = y0 - y1 + y2 - y3;
+    	double myDeltaX = theX0 - theX1 + theX2 - theX3;
+        double myDeltaY = theY0 - theY1 + theY2 - theY3;
 
-        myTransform.m22 = 1.0F;
+        myTransform.m22 = 1.0f;
 
-        if ((dx3 == 0.0f) && (dy3 == 0.0f)) { 
-        	myTransform.m00 = x1 - x0;
-        	myTransform.m01 = x2 - x1;
-        	myTransform.m02 = x0;
-        	myTransform.m10 = y1 - y0;
-        	myTransform.m11 = y2 - y1;
-        	myTransform.m12 = y0;
+        if ((myDeltaX == 0.0f) && (myDeltaY == 0.0f)) { 
+        	myTransform.m00 = theX1 - theX0;
+        	myTransform.m01 = theX2 - theX1;
+        	myTransform.m02 = theX0;
+        	myTransform.m10 = theY1 - theY0;
+        	myTransform.m11 = theY2 - theY1;
+        	myTransform.m12 = theY0;
         	myTransform.m20 = 0.0F;
         	myTransform.m21 = 0.0F;
         } else {
-            double dx1 = x1 - x2;
-            double dy1 = y1 - y2;
-            double dx2 = x3 - x2;
-            double dy2 = y3 - y2;
+            double myDeltaX1 = theX1 - theX2;
+            double myDeltaY1 = theY1 - theY2;
+            double myDeltaX2 = theX3 - theX2;
+            double myDeltaY2 = theY3 - theY2;
 
-            double invdet = 1.0F / (dx1 * dy2 - dx2 * dy1);
-            myTransform.m20 = (dx3 * dy2 - dx2 * dy3) * invdet;
-            myTransform.m21 = (dx1 * dy3 - dx3 * dy1) * invdet;
-            myTransform.m00 = x1 - x0 + myTransform.m20 * x1;
-            myTransform.m01 = x3 - x0 + myTransform.m21 * x3;
-            myTransform.m02 = x0;
-            myTransform.m10 = y1 - y0 + myTransform.m20 * y1;
-            myTransform.m11 = y3 - y0 + myTransform.m21 * y3;
-            myTransform.m12 = y0;
+            double myInverseDeterminant = 1.0f / (myDeltaX1 * myDeltaY2 - myDeltaX2 * myDeltaY1);
+            myTransform.m20 = (myDeltaX * myDeltaY2 - myDeltaX2 * myDeltaY) * myInverseDeterminant;
+            myTransform.m21 = (myDeltaX1 * myDeltaY - myDeltaX * myDeltaY1) * myInverseDeterminant;
+            myTransform.m00 = theX1 - theX0 + myTransform.m20 * theX1;
+            myTransform.m01 = theX3 - theX0 + myTransform.m21 * theX3;
+            myTransform.m02 = theX0;
+            myTransform.m10 = theY1 - theY0 + myTransform.m20 * theY1;
+            myTransform.m11 = theY3 - theY0 + myTransform.m21 * theY3;
+            myTransform.m12 = theY0;
         }
         
         return myTransform;

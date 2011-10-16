@@ -1,31 +1,30 @@
 package laserschein;
 
-import processing.core.PMatrix3D;
+import processing.core.PMatrix2D;
 import processing.core.PVector;
 
 
 public class GeometryCorrector {
-	private final Homography _myHomography;
-	private float _myXScale;
-	private float _myYScale;
+	private Homography _myHomography;
 	
-	private PVector _myOffset;
+	private GeometrySettings _mySettings;
+	
 	
 	/**
 	 * Cached transformation matrix
 	 */
-	private PMatrix3D _myMatrix;
+	private PMatrix2D _myMatrix;
 	
 
 
 	public GeometryCorrector() {
-		_myHomography = new Homography(new PVector(-1,-1),new PVector(1,-1),new PVector(1,1),new PVector(-1,1), new PVector(-1,-1),new PVector(1,-1),new PVector(1,1),new PVector(-1,1));
-		_myXScale = 0.5f;
-		_myYScale = 0.5f;
 		
-		_myOffset = new PVector();
+		_myMatrix = new PMatrix2D();	
+		_mySettings = new GeometrySettings();
 		
-		_myMatrix = new PMatrix3D();
+		
+		_myHomography = new Homography(_mySettings.homographySource1, _mySettings.homographySource2, _mySettings.homographySource3, _mySettings.homographySource4, _mySettings.homographyDestination1, _mySettings.homographyDestination2, _mySettings.homographyDestination3, _mySettings.homographyDestination4 );
+
 		
 		updateTransforms();
 	}
@@ -36,14 +35,12 @@ public class GeometryCorrector {
 	 */
 	public void updateTransforms() {
 		_myMatrix.reset();
-		//_myMatrix.mul(_myHomography.modelViewMatrix());
 
-		_myMatrix.translate(_myOffset.x, _myOffset.y);
-		_myMatrix.scale(_myXScale, _myYScale);
-		//_myHomography.transform(theV)
-		// TODO: how to apply the homography
-		
-		//_myMatrix.reset();
+		_myMatrix.translate(_mySettings.offset.x, _mySettings.offset.y);
+		_myMatrix.scale(_mySettings.scale.x, _mySettings.scale.y);
+
+		_myHomography = new Homography(_mySettings.homographySource1, _mySettings.homographySource2, _mySettings.homographySource3, _mySettings.homographySource4, _mySettings.homographyDestination1, _mySettings.homographyDestination2, _mySettings.homographyDestination3, _mySettings.homographyDestination4 );
+
 	}
 	
 	
@@ -53,10 +50,11 @@ public class GeometryCorrector {
 	 * @param thePVector
 	 * @return
 	 */
-	public PVector transform(final PVector thePVector) {
-		final PVector myResult = _myMatrix.mult(thePVector, null);
+	public PVector transform(final PVector theVector) {
+		PVector myPosition = _myHomography.transform(new PVector(theVector.x, theVector.y));
+		myPosition = _myMatrix.mult(myPosition, null);
 		
-		return myResult;
+		return myPosition;
 	}
 	
 	
@@ -70,12 +68,19 @@ public class GeometryCorrector {
 		final LaserShape myShape = new LaserShape(theShape);
 		
 		for(final LaserPoint myPoint:myShape.points()){
+			
 			final PVector myPosition = transform(new PVector(myPoint.x, myPoint.y));
+			
 			myPoint.x = myPosition.x;
 			myPoint.y = myPosition.y;
 		}
 		
 		return myShape;
+	}
+	
+	
+	public GeometrySettings settings() {
+		return _mySettings;
 	}
 
 

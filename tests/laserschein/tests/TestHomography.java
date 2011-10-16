@@ -109,7 +109,7 @@ public class TestHomography extends PApplet{
 
 	  pushMatrix();
 
-	  applyMatrix(homo.modelViewMatrix());
+	  applyMatrix(homo.tansformationMatrix());
 
 	  box(100);
 	  
