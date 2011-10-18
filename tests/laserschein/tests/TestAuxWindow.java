@@ -1,31 +1,22 @@
 package laserschein.tests;
 
-
 import processing.core.PApplet;
 import processing.opengl.PGraphicsOpenGL;
 import laserschein.*;
-import laserschein.ui.ControlWindow;
 
 @SuppressWarnings("serial")
 public class TestAuxWindow extends PApplet {
 
 	Laserschein laser;
-	ControlWindow sim;
 
 	public void setup() {
 		size(600, 600, OPENGL);
 		frameRate(-1); // as fast as possible
 
-		smooth();
-		
+		smooth();		
 		laser = new Laserschein(this, Laserschein.EASYLASEUSB2);
-		
-		sim = ControlWindow.create(laser);
-		
-		laser.loadSettings("foo.xml");
 
-		laser.saveSettings("foo.xml");
-
+		laser.showControlWindow();
 	
 	}
 
@@ -89,16 +80,14 @@ public class TestAuxWindow extends PApplet {
 		stroke(random(255),random(255),random(255));
 
 
-		sim.updateFrame(renderer.finalFrame());
 		
 			stroke(255,255,0);
 			ellipse(20,20, 400,400);
 		
 		endRaw();
 		
+		laser.drawDebugView();
 		
-		
-		//laser.drawDebugView();
 		text(frameRate, 30, 100);
 
 		
@@ -128,11 +117,11 @@ public class TestAuxWindow extends PApplet {
 	@Override
 	public void keyPressed() {
 		if(key == 'o') {
-			sim.open();
+			laser.showControlWindow();
 		}
 		
 		if(key == 'h') {
-			sim.unopen();
+			laser.hideControlWindow();
 		}
 	}
 

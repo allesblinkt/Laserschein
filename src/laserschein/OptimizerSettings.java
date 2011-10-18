@@ -41,21 +41,21 @@ public class OptimizerSettings implements TweakableSettings {
 
 	
 	/**
-	 * Eliminates duplicate points
+	 * Blanking shift
 	 */
-	public boolean eliminateDuplicates = true;
+	public int blankShift = 0; 
 	
 	
 	/**
 	 * When is it considered a curve
 	 */
-	public int smoothAngleTreshold = 1; 	
+	public int smoothAngleTreshold = 1; 	 // TODO: to do
 	
 	
 	/**
 	 * How many points should be drawn on closed curves
 	 */
-	public int closedOverdraw = 1; 	
+	public int closedOverdraw = 1; 	 // TODO: to do
 	
 	/**
 	 * This amount of points is always added at the start of a path
@@ -70,24 +70,24 @@ public class OptimizerSettings implements TweakableSettings {
 	/**
 	 * This amount of points is always added at curves
 	 */
-	public int extraPointsCurve = 0;
+	public int extraPointsCurve = 0;  // TODO: to do
 	
 	/**
 	 * This amount of points is always added at the end of a path
 	 */
-	public int extraPointsEnd = 3; 
+	public int extraPointsEnd = 3;  
 
 	/**
 	 * The maximum distance between individual points. If a distance is smaller 
 	 * than this, it will be subdivided.
 	 */
-	public float maxTravel = 600; 
+	public float maxTravel = 600/16000.0f; 
 
 	/**
 	 * The maximum distance between individual points. If a distance is smaller 
 	 * than this, it will be subdivided.
 	 */
-	public float maxTravelBlank = 8000; 
+	public float maxTravelBlank = 8000/16000.0f;   
 
 	
 	/**
@@ -112,7 +112,8 @@ public class OptimizerSettings implements TweakableSettings {
 		
 		final XMLElement myOptimize = myXml.getChild("optimize");
 		reorderFrame = myOptimize.getBoolean("reorder", reorderFrame);
-		eliminateDuplicates = myOptimize.getBoolean("duplicates", reorderFrame);
+		blankShift = myOptimize.getInt("blankshift", blankShift);
+
 
 		
 		final XMLElement mySmooth = myXml.getChild("smooth");
@@ -150,7 +151,8 @@ public class OptimizerSettings implements TweakableSettings {
 		final XMLElement myOptimize = new XMLElement();
 		myOptimize.setName("optimize");
 		myOptimize.setBoolean("reorder", reorderFrame);
-		myOptimize.setBoolean("duplicates", eliminateDuplicates);
+		myOptimize.setInt("blankshift", blankShift);
+
 		myXml.addChild(myOptimize);
 
 		
@@ -187,7 +189,8 @@ public class OptimizerSettings implements TweakableSettings {
 		myTravel.setFloat("drawing", maxTravel);
 		myTravel.setFloat("blank", maxTravelBlank);
 		myXml.addChild(myTravel);
-
+		
+		
 		
 		return myXml;
 	}

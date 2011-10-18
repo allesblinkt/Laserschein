@@ -37,7 +37,8 @@ public class Optimizer {
 
 	private OptimizerSettings _mySettings;
 
-
+	private static final float SMALLEST_DISTANCE = 2/16000.0f;
+	
 	public Optimizer() {
 		_mySettings = new OptimizerSettings();
 	}
@@ -63,11 +64,45 @@ public class Optimizer {
 		myOptimizedFrame = createFrameWithSingleBlanks(myLaserGraphic);
 		myOptimizedFrame = enhanceAngles(myOptimizedFrame);
 		myOptimizedFrame = interpolatePoints(myOptimizedFrame);
+		myOptimizedFrame = shiftPoints(myOptimizedFrame, _mySettings.blankShift);
+		
 		
 		return myOptimizedFrame;
 	}
 
 		
+
+
+	private LaserFrame shiftPoints(final LaserFrame theFrame, int theShift) {
+		final LaserFrame myNewFrame = new LaserFrame();
+		
+		for(int i = theShift; i < theFrame.points().size() + theShift; i++) {
+			
+			int myPositionIndex = i;
+			int myColorIndex = i - theShift;
+			
+			LaserPoint myPointPosition = new LaserPoint();
+			LaserPoint myPointColor = new LaserPoint();
+			
+			if(myPositionIndex >= 0 &&  myPositionIndex < theFrame.points().size()){
+				myPointPosition = theFrame.points().get(myPositionIndex);
+			}
+			
+			if(myColorIndex >= 0 &&  myColorIndex < theFrame.points().size()){
+				myPointColor = theFrame.points().get(myColorIndex);
+			}
+			
+			final LaserPoint myNewPoint = new LaserPoint(myPointPosition);
+			myNewPoint.r = myPointColor.r;
+			myNewPoint.g = myPointColor.g;
+			myNewPoint.b = myPointColor.b;
+			myNewPoint.isBlanked = myPointColor.isBlanked;
+
+			myNewFrame.points().add(myNewPoint);
+		}
+	
+		return myNewFrame;
+	}
 
 
 	private LaserFrame createFrameWithSingleBlanks(final LaserGraphic theGraphic) {
@@ -290,7 +325,10 @@ public class Optimizer {
 		final LaserFrame myNewFrame = new LaserFrame();
 
 		final Vector<LaserPoint> myPoints = theFrame.points();
+		final float myMaximumTravel = Math.max(_mySettings.maxTravel, SMALLEST_DISTANCE);
+		final float myMaximumTravelBlank = Math.max(_mySettings.maxTravelBlank, SMALLEST_DISTANCE);
 
+		
 		LaserPoint myNextPoint = null;
 		for (int i = 0; i < myPoints.size(); i++) {
 			final LaserPoint myPoint = myPoints.get(i);
@@ -303,14 +341,20 @@ public class Optimizer {
 
 			myNewFrame.points().add(myPoint);
 
-			if (myNextPoint != null &&
-					!myNextPoint.isBlanked &&
-					myPoint.isCorner &&
-					myNextPoint.isCorner &&
-					myPoint.distance(myNextPoint) > _mySettings.maxTravel) {
+			if (myNextPoint != null && myPoint.isCorner && myNextPoint.isCorner )
+				
+				if(	(!myNextPoint.isBlanked && myPoint.distance(myNextPoint) > myMaximumTravel) 
+						|| (myNextPoint.isBlanked && myPoint.distance(myNextPoint) > myMaximumTravelBlank) ) {
+					
+				float myMaxDistance = myMaximumTravel;
+				
+				if(myNextPoint.isBlanked) {
+					myMaxDistance = myMaximumTravelBlank;
+				}
+				
 				float myDistance = myPoint.distance(myNextPoint);
 
-				int mySteps = (int) (myDistance / _mySettings.maxTravel);
+				int mySteps = (int) (myDistance / myMaxDistance);
 				float myIncrement = 1f / (float) (mySteps + 1);
 
 				for (int j = 0; j < mySteps; j++) {

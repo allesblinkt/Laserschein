@@ -158,7 +158,7 @@ public class LaserPoint {
 		final float myY = theOther.y - this.y;
 		return myX * myX + myY * myY;
 	}
-
+	
 
 	/**
 	 * Interpolates between this and another point (linear)

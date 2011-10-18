@@ -21,18 +21,7 @@ public class GeometrySettings implements TweakableSettings{
 	
 	
 	public GeometrySettings() {
-		homographySource1 = new PVector(-1,-1);
-		homographySource2 = new PVector(1,-1);
-		homographySource3 = new PVector(1,1);
-		homographySource4 = new PVector(-1,1);
-		
-		homographyDestination1 = new PVector(-1,-1);
-		homographyDestination2 = new PVector(1,-1);
-		homographyDestination3 = new PVector(1,1);
-		homographyDestination4 = new PVector(-1,1);
-		
-		scale = new PVector(1,1);
-		offset = new PVector(0,0);
+		reset();
 	}
 	
 
@@ -96,6 +85,23 @@ public class GeometrySettings implements TweakableSettings{
 	@Override
 	public String xmlNamespace() {
 		return "geometry";
+	}
+
+
+
+	public void reset() {
+		homographySource1 = new PVector(-1,-1);
+		homographySource2 = new PVector(1,-1);
+		homographySource3 = new PVector(1,1);
+		homographySource4 = new PVector(-1,1);
+		
+		homographyDestination1 = new PVector(-1,-1);
+		homographyDestination2 = new PVector(1,-1);
+		homographyDestination3 = new PVector(1,1);
+		homographyDestination4 = new PVector(-1,1);
+		
+		scale = new PVector(1,1);
+		offset = new PVector(0,0);		
 	} 
 	
 	

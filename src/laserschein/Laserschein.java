@@ -23,9 +23,11 @@
  */
 package laserschein;
 
+import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 import laserschein.AbstractLaserOutput.OutputState;
+import laserschein.ui.ControlWindow;
 import processing.core.PApplet;
 import processing.xml.XMLElement;
 
@@ -38,6 +40,7 @@ public class Laserschein {
 	
 	public static final Class<LD2000Adaptor> LD2000 = LD2000Adaptor.class;
 	public static final Class<EasylaseUsb2Adaptor> EASYLASEUSB2 = EasylaseUsb2Adaptor.class;
+	private static final String DEFAULT_SETTINGS_FILENAME = "lasersettings.xml";
 
 
 	private PApplet _myParent;
@@ -47,7 +50,7 @@ public class Laserschein {
 	private GeometryCorrector _myGeometryCorrector;
 
 	private AbstractLaserOutput _myOutput;
-//	private final SimulatorWindow _myControlWindow;
+	private ControlWindow _myControlWindow = null;
 
 	
 
@@ -117,7 +120,8 @@ public class Laserschein {
 		
 		_myGeometryCorrector = new GeometryCorrector();
 		_myOptimizer = new Optimizer();
-		//	_myControlWindow = SimulatorWindow.create();
+
+		loadDefaultSettings();
 	}
 	
 	
@@ -131,6 +135,10 @@ public class Laserschein {
 	public void draw(final LaserFrame theFinalFrame) {
 		if(_myOutput != null && _myOutput.getState() == OutputState.READY){
 			_myOutput.draw(theFinalFrame);
+		}
+		
+		if(hasControlWindow()) {
+			_myControlWindow.updateFrame(theFinalFrame);
 		}
 	}
 	
@@ -196,6 +204,19 @@ public class Laserschein {
 	}
 	
 	
+
+	public void saveDefaultSettings() {
+		saveSettings(DEFAULT_SETTINGS_FILENAME);
+		
+	}
+
+	public void loadDefaultSettings() {
+		loadSettings(DEFAULT_SETTINGS_FILENAME);
+		
+	}
+
+	
+	
 	/**
 	 * Loads settings for the geometry corrector and the optimizer from the specified XML file.
 	 * 
@@ -235,6 +256,14 @@ public class Laserschein {
 	 * @param theFileName
 	 */
 	public void loadSettings(final String theFileName) {
+		
+		BufferedReader myReader = _myParent.createReader(theFileName);
+		
+		if(myReader == null){
+			Logger.printWarning("Laserschein.loadSettings", "Could not find settings file ( " + theFileName + " )...");
+			return;
+		}
+		
 		final XMLElement myLoadedXml = new XMLElement(_myParent, theFileName);
 		
 		final XMLElement myGeometryXml = myLoadedXml.getChild(geometry().settings().xmlNamespace());
@@ -258,6 +287,16 @@ public class Laserschein {
 		} else {
 			Logger.printWarning("Laserschein.loadSettings", "Optimizer settings not found in settings file...");
 		}
+		
+		
+		Logger.printInfo("Laserschein.loadSettings", "Settings loaded from " + theFileName);
+		
+		
+		if(hasControlWindow()) {
+			_myControlWindow.refreshAllSettings();
+
+		}
+
 	}
 	
 	
@@ -273,6 +312,40 @@ public class Laserschein {
 
 		if(_myOutput != null && _myOutput.getState() == OutputState.READY){
 			_myOutput.destroy();
+		}
+	}
+	
+	
+	
+	public boolean hasControlWindow() {
+		return (_myControlWindow != null);
+	}
+	
+	
+	public void createControlWindow() {
+		if(!hasControlWindow()){
+			_myControlWindow = ControlWindow.create(this);
+		}
+	}
+	
+	
+	public ControlWindow controlWindow() {
+		return _myControlWindow;
+	}
+	
+	
+	public void showControlWindow() {
+		if(hasControlWindow()) {
+			_myControlWindow.open();
+		} else {
+			createControlWindow();
+		}
+	}
+	
+	
+	public void hideControlWindow() {
+		if(hasControlWindow()) {
+			_myControlWindow.unopen();
 		}
 	}
 

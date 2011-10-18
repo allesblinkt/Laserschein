@@ -1,3 +1,26 @@
+/**
+ *  
+ *  Laserschein. interactive ILDA output from processing and java
+ *
+ *  2011 by Benjamin Maus
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ * @author Benjamin Maus (http://www.allesblinkt.com)
+ *
+ */
 package laserschein.ui;
 
 import java.awt.Dimension;
@@ -28,7 +51,7 @@ public class NumberTweaker extends AbstractTweaker<NumberTweaker> {
 	
 	private NumberFormat _myFormat;
 	
-	private static int DIVISIONS = 100;
+	private static int DIVISIONS = 200;
 
 	public NumberTweaker(String theTitle, float theDefault, float theMin, float theMax, boolean theIsInt) {
 		
@@ -60,7 +83,7 @@ public class NumberTweaker extends AbstractTweaker<NumberTweaker> {
 	
 		_mySlider = new JSlider(0, DIVISIONS);
 		_mySlider.setFocusable(true);
-		_mySlider.setPreferredSize(new Dimension(200, 8));
+		_mySlider.setPreferredSize(new Dimension(200, 16));
 		myConstraints.gridwidth = 3;
 		myConstraints.fill = GridBagConstraints.HORIZONTAL;
 		myConstraints.gridx = 0; myConstraints.gridy = 1; 
@@ -106,12 +129,13 @@ public class NumberTweaker extends AbstractTweaker<NumberTweaker> {
 	
 	public void setValue(float theValue, boolean theNotify) {
 		if(valueValid(theValue)){
+			
 			_mySlider.setValue(transformValueToSlider(theValue));
 			_myTextField.setText(_myFormat.format(theValue));
 			
 			if(theNotify) {
 				notifyListeners();
-			}
+			} 
 		}
 	}
 	
