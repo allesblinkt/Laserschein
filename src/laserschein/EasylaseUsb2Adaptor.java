@@ -86,10 +86,7 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 		final int myNumberOfPoints = myPoints.size();
 
 		if (myNumberOfPoints > getMaximumNumberOfPoints()) {
-			Logger.printWarning(
-					"EasylaseUsb2Adaptor.draw", "Too many points to draw. Maximum number is "
-							+ MAX_POINTS
-					);
+			Logger.printWarning( "EasylaseUsb2Adaptor.draw", "Too many points to draw. Maximum number is " + MAX_POINTS);
 		}
 
 		final int myDisplayedNumberOfPoints = Math.min(myNumberOfPoints, getMaximumNumberOfPoints());
@@ -102,6 +99,7 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 			int myX = PApplet.constrain(_myTransformX(myPoint.x), 0, COORDINATE_RANGE);
 			int myY = PApplet.constrain(_myTransformY(myPoint.y), 0, COORDINATE_RANGE);
 
+			
 			_myPoints[i].x = (short)myX;
 			_myPoints[i].y = (short)myY;
 
@@ -116,7 +114,7 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 				_myPoints[i].r =  (byte)PApplet.constrain(myPoint.r, 0, 255);
 				_myPoints[i].g =  (byte)PApplet.constrain(myPoint.g, 0, 255);
 				_myPoints[i].b =  (byte)PApplet.constrain(myPoint.b, 0, 255);
-				_myPoints[i].i =  (byte)255;
+				_myPoints[i].i =  (byte)PApplet.constrain(myPoint.r + myPoint.g + myPoint.b, 0, 255);
 			}
 
 
@@ -135,7 +133,7 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 		/* Send and update */
 		/* Handshake */
 		if(EasylaseUsb2Native.EasyLaseGetStatus(new IntByReference(_myCardNumber)) == 1) {
-			EasylaseUsb2Native.EasyLaseWriteFrameNR(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)_myScanSpeed, (short)0);
+			EasylaseUsb2Native.EasyLaseWriteFrame(new IntByReference(_myCardNumber), _myPoints[0], myDisplayedNumberOfPoints * 8, (short)_myScanSpeed);
 		} else {
 			
 		}

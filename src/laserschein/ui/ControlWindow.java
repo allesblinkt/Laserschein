@@ -162,7 +162,7 @@ public class ControlWindow extends PApplet {
 		myOptimizerPanel.setOpaque(false);
 		
 		
-		_myOptBlankhiftSlider = new NumberTweaker("Blanking shift", 0, -10, 10, true); 
+		_myOptBlankhiftSlider = new NumberTweaker("Blanking shift", 0, -15, 15, true); 
 		_myOptBlankhiftSlider.addChangeEventListener(new TweakerChangeListener<NumberTweaker>() {
 			@Override
 			public void changed(NumberTweaker theTweaker) {

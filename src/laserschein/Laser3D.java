@@ -141,6 +141,13 @@ public class Laser3D extends PGraphics2D {
 	@Override
 	public void endShape(int mode) {
 		if(_myShape.isValid()){
+			
+			if(_myShape.start().isCoincided(_myShape.end())){
+				_myShape.closed(true);
+			} else {
+				_myShape.closed(false);
+			}
+			
 			_myGraphic.shapes().add(_myShape);
 		}
 	}

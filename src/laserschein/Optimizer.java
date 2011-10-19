@@ -76,10 +76,12 @@ public class Optimizer {
 	private LaserFrame shiftPoints(final LaserFrame theFrame, int theShift) {
 		final LaserFrame myNewFrame = new LaserFrame();
 		
-		for(int i = theShift; i < theFrame.points().size() + theShift; i++) {
+		int myShift = -theShift;
+		
+		for(int i = myShift; i < theFrame.points().size() + myShift; i++) {
 			
 			int myPositionIndex = i;
-			int myColorIndex = i - theShift;
+			int myColorIndex = i - myShift;
 			
 			LaserPoint myPointPosition = new LaserPoint();
 			LaserPoint myPointColor = new LaserPoint();
@@ -110,6 +112,9 @@ public class Optimizer {
 
 		LaserPoint myPreviousPoint = null;
 		LaserPoint myNextPoint = null;
+		
+		
+		
 
 		for (int i = 0; i < theGraphic.shapes().size(); i++) {
 
@@ -120,6 +125,17 @@ public class Optimizer {
 				myNextShape = theGraphic.shapes().get(i + 1);
 			}
 
+			
+			/* Add additional very first blank */
+			if (myShape.points().size() > 0 && i == 0) {
+				final LaserPoint myPoint = new LaserPoint(myShape.start());
+				myPoint.isBlanked = true;
+
+				myFrame.points().add(myPoint);
+
+			}
+			
+			
 			/* Add blank */
 			if (myShape.points().size() > 0) {
 				final LaserPoint myPoint = new LaserPoint(myShape.start());

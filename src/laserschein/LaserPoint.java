@@ -30,7 +30,6 @@ package laserschein;
  *
  */
 public class LaserPoint {
-
 	public float x; 
 	public float y;
 	
@@ -86,7 +85,7 @@ public class LaserPoint {
 				this.g == theOther.g &&
 				this.b == theOther.b &&
 				this.isCorner == theOther.isCorner &&
-				this.isBlanked == theOther.isBlanked) {
+				this.isBlanked == theOther.isBlanked){
 			return true;
 		}
 		return false;

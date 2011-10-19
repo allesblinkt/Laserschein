@@ -5,6 +5,7 @@ import java.util.Vector;
 
 public class LaserShape {
 	private Vector<LaserPoint> _myPoints;
+	private boolean _myIsClosed;
 	
 	public LaserShape() {
 		_myPoints = new Vector<LaserPoint>();
@@ -74,5 +75,23 @@ public class LaserShape {
 		}
 		
 		
+	}
+
+	
+	/**
+	 * @return true if the shape is flagged as close
+	 */
+	public boolean closed() {
+		return _myIsClosed;
+	}
+	
+	
+	/**
+	 * Flag the shape as being closed.
+	 * 
+	 * @param theFlag
+	 */
+	public void closed(boolean theFlag) {
+		_myIsClosed = theFlag;
 	}
 }

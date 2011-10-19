@@ -18,6 +18,7 @@ public class TestDrawing extends PApplet {
 		size(500, 500, P3D);
 		
 		_mySchein = new Laserschein(this, Laserschein.EASYLASEUSB2);
+		_mySchein.showControlWindow();
 	}
 
 
@@ -47,7 +48,7 @@ public class TestDrawing extends PApplet {
 			_myRenderer.noSmooth();
 			_myRenderer.noFill();
 
-			stroke(255, 0, 0);
+			stroke(0, 255, 0);
 
 			for (int i = 0; i < 10; i++) {
 				 line(mouseX, mouseY + (i * 6), width / 2, height / 2);
@@ -55,18 +56,15 @@ public class TestDrawing extends PApplet {
 			// line(cos(millis() * 0.004f) * 100 + 100,
 			// sin(millis() * 0.004f) * 100 + 100, width / 2, height / 2);
 
-			stroke(255,0,0);
 
 			rect(mouseX, mouseY, 200, 200);
 
 			// line(cos(millis() * 0.004f) * 100 + 100,
 			// sin(millis() * 0.004f) * 100 + 100, mouseX, mouseY + (0 * 6));
 
-			stroke(255, 0, 0);
 			rectMode(CENTER);
 
 			noFill();
-			stroke(255, 0, 0);
 
 			translate(width / 2, height / 2);
 
@@ -74,10 +72,10 @@ public class TestDrawing extends PApplet {
 
 			_myRenderer.smooth();
 
-			ellipse(-100, 0, 200, 200);
+			//ellipse(-100, 0, 200, 200);
 			
 
-			ellipse(100, 0, 200, 200);
+			//ellipse(100, 0, 200, 200);
 			_myRenderer.noSmooth();
 			
 

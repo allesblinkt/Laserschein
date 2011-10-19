@@ -41,7 +41,7 @@ public class BooleanTweaker extends AbstractTweaker<BooleanTweaker> {
 	
 	
 	public void setValue(boolean theValue, boolean theNotify) {
-		_myCheckbox.setSelected(true);
+		_myCheckbox.setSelected(theValue);
 		
 		if(theNotify) {
 			notifyListeners();

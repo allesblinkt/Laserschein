@@ -10,11 +10,12 @@ public class TestAuxWindow extends PApplet {
 	Laserschein laser;
 
 	public void setup() {
-		size(600, 600, OPENGL);
+		size(600, 600, P3D);
 		frameRate(-1); // as fast as possible
 
 		smooth();		
 		laser = new Laserschein(this, Laserschein.EASYLASEUSB2);
+		System.out.println(laser.output().getScanSpeed());
 
 		laser.showControlWindow();
 	
@@ -22,8 +23,6 @@ public class TestAuxWindow extends PApplet {
 
 
 	public void draw() {
-		@SuppressWarnings("unused")
-		final PGraphicsOpenGL myGl = (PGraphicsOpenGL)g;
 		
 		
 		background(60);
@@ -82,7 +81,7 @@ public class TestAuxWindow extends PApplet {
 
 		
 			stroke(255,255,0);
-			ellipse(20,20, 400,400);
+			//ellipse(20,20, 400,400);
 		
 		endRaw();
 		
@@ -101,13 +100,13 @@ public class TestAuxWindow extends PApplet {
 		beginShape();
 		stroke(255,0,0);
 		vertex(-myX, -myY);
-		stroke(0,255,0);
 		vertex(0, 0);
-		stroke(0,0,255);
 		vertex(myX, -myY);
 		endShape();
 
 		beginShape();
+		stroke(0,255,0);
+
 		vertex(myX, myY);
 		vertex(0, 0);
 		vertex(-myX, myY);
