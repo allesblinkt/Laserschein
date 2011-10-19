@@ -190,8 +190,8 @@ public class ControlWindow extends PApplet {
 				updateOptimizerSettingsFromUi();
 			}
 		});
-		_myOptAngleThresholdSlider.setEnabled(false);
-		myOptimizerPanel.add(_myOptAngleThresholdSlider);	
+	
+//		myOptimizerPanel.add(_myOptAngleThresholdSlider);	// TODO: reenable
 		
 		
 		
@@ -205,7 +205,7 @@ public class ControlWindow extends PApplet {
 		});
 		_myOptOverdrawSlider.setEnabled(false);
 
-		myOptimizerPanel.add(_myOptOverdrawSlider);	
+//		myOptimizerPanel.add(_myOptOverdrawSlider);	 // TODO: reenable
 		
 		
 		
@@ -251,7 +251,7 @@ public class ControlWindow extends PApplet {
 		});
 		_myOptExtraPointsCurveSlider.setEnabled(false);
 
-		myOptimizerPanel.add(_myOptExtraPointsCurveSlider);	
+//		myOptimizerPanel.add(_myOptExtraPointsCurveSlider);	 // TODO: reenable
 		
 
 		
