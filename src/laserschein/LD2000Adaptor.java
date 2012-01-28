@@ -60,17 +60,17 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 	public void initialize() {
 		
 		if (LD2000Native.state == NativeState.READY) {
-			Logger.printInfo("LD2000Adaptor.initialize", "Initializing");
+			Logger.printInfo("Initializing");
 			_myInitialize();
 		}
 		
 		if (LD2000Native.state == NativeState.UNSUPPORTED_PLATFORM) {
-			Logger.printError("LD2000Adaptor.initialize", "Platform not supported. Only Windows >XP works for now.");
+			Logger.printError("Platform not supported. Only Windows >XP works for now.");
 			_myState = OutputState.UNSUPPORTED_PLATFORM;
 		}
 		
 		if (LD2000Native.state == NativeState.NOT_FOUND) {
-			Logger.printError("LD2000Adaptor.initialize", "The LD2000.dll could not be loaded.");
+			Logger.printError("The LD2000.dll could not be loaded.");
 			_myState = OutputState.LIBRARY_ERROR;
 		}
 	}
@@ -88,11 +88,11 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 
 		_myMaxNumberOfPoints = myMaxPoints.getValue().intValue();
 
-		Logger.printInfo("LD2000Adaptor.initialize", "Max number of points: "
+		Logger.printInfo("Max number of points: "
 				+ _myMaxNumberOfPoints);
 
 		if (myStatus.getValue().intValue() != LD2000Native.LDError.OK.getCode()) {
-			Logger.printError("LD2000Adaptor.initialize", "LD2000 failed to initialize with error code: "
+			Logger.printError("LD2000 failed to initialize with error code: "
 					+ myStatus.getValue().intValue());
 
 			_myState = OutputState.NO_DEVICES_FOUND;
@@ -103,7 +103,7 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 			LD2000Native.SetWorkingTracks(new NativeLong(1));
 			LD2000Native.SetWorkingFrame(new NativeLong(1));
 
-			Logger.printInfo("LD2000Adaptor.initialize", "Initialization was successful");
+			Logger.printInfo("Initialization was successful");
 
 			_myAllocateMemory();
 
@@ -167,7 +167,7 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 
 		if (myNumberOfPoints > _myMaxNumberOfPoints) {
 			Logger.printWarning(
-					"LD2000Adaptor.draw", "Too many points to draw. Maximum number is "
+					"Too many points to draw. Maximum number is "
 							+ _myMaxNumberOfPoints
 					);
 		}
@@ -249,7 +249,7 @@ public class LD2000Adaptor extends AbstractLaserOutput {
 	@Override
 	public void setScanSpeed(int theSpeed) {
 		Logger.printWarning(
-				"LD2000Adaptor.setScanSpeed", "Setting the scan speed is not implemented yet. But you" +
+				"Setting the scan speed is not implemented yet. But you" +
 						"can change it in LaserShowDesigner 2000 and save it to the LD2000.ini ..."
 				);
 		

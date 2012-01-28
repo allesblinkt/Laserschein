@@ -59,17 +59,17 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	public void initialize() {
 	
 		if (EasylaseUsb2Native.state == NativeState.READY) {
-			Logger.printInfo("EasylaseUsb2Adaptor.initialize", "Initializing");
+			Logger.printInfo("Initializing");
 			_myInitialize();
 		}
 		
 		if (EasylaseUsb2Native.state == NativeState.UNSUPPORTED_PLATFORM) {
-			Logger.printError("EasylaseUsb2Adaptor.initialize", "Platform not supported. Only Windows >XP works for now.");
+			Logger.printError("Platform not supported. Only Windows >XP works for now.");
 			_myState = OutputState.UNSUPPORTED_PLATFORM;
 		}
 		
 		if (EasylaseUsb2Native.state == NativeState.NOT_FOUND) {
-			Logger.printError("EasylaseUsb2Adaptor.initialize", "The jmlaser.dll could not be loaded.");
+			Logger.printError("The jmlaser.dll could not be loaded.");
 			_myState = OutputState.LIBRARY_ERROR;
 		}
 		
@@ -86,7 +86,7 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 		final int myNumberOfPoints = myPoints.size();
 
 		if (myNumberOfPoints > getMaximumNumberOfPoints()) {
-			Logger.printWarning( "EasylaseUsb2Adaptor.draw", "Too many points to draw. Maximum number is " + MAX_POINTS);
+			Logger.printWarning( "Too many points to draw. Maximum number is " + MAX_POINTS);
 		}
 
 		final int myDisplayedNumberOfPoints = Math.min(myNumberOfPoints, getMaximumNumberOfPoints());
@@ -186,15 +186,15 @@ public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	
 		final int myNumberOfCards = EasylaseUsb2Native.EasyLaseGetCardNum();
 		
-		Logger.printInfo("EasylaseUsb2Adaptor.initialize", "Number of installed cards: " + myNumberOfCards);
+		Logger.printInfo("Number of installed cards: " + myNumberOfCards);
 
 		if (myNumberOfCards < 1) {
-			Logger.printError("EasylaseUsb2Adaptor.initialize", "No cards connected found. ");
+			Logger.printError("No cards connected found. ");
 
 			_myState = OutputState.NO_DEVICES_FOUND;
 
 		} else {
-			Logger.printInfo("EasylaseUsb2Adaptor.initialize", "Initialization was successful");
+			Logger.printInfo("Initialization was successful");
 
 			_myAllocateMemory();
 

@@ -81,7 +81,7 @@ public class Laserschein {
 		} else if(theOutputClassName.equalsIgnoreCase("Easylase")){
 			myClass = EasylaseUsb2Adaptor.class;
 		} else {
-			Logger.printError("Laserschein", "No suitable output module found. Currently LD2000 and Easylase are supported as output modules.");
+			Logger.printError("No suitable output module found. Currently LD2000 and Easylase are supported as output modules.");
 		}
 		
 		init(theParent, myClass);
@@ -104,15 +104,15 @@ public class Laserschein {
 		_myParent.registerDispose(this);
 	
 				
-		Logger.printInfo("Laserschein", "Initializing the Laser");
+		Logger.printInfo("Initializing the Laser");
 
 		try {
 			_myOutput = (AbstractLaserOutput)theOutputClass.newInstance();
 			_myOutput.initialize();
 		} catch (InstantiationException e) {
-			Logger.printError("Laserschein", "This is not a class supported as an output");
+			Logger.printError("This is not a class supported as an output");
 		} catch (IllegalAccessException e) {
-			Logger.printError("Laserschein", "This is not a class supported as an output");
+			Logger.printError("This is not a class supported as an output");
 		}
 
 	
@@ -242,10 +242,10 @@ public class Laserschein {
 			myWriter.print(myXml.toString());
 			myWriter.flush();
 			myWriter.close();
-			Logger.printInfo("Laserschein.saveSettings", "Settings saved to " + theFileName);
+			Logger.printInfo("Settings saved to " + theFileName);
 
 		} else {
-			Logger.printError("Laserschein.saveSettings", "Could not write settings to " + theFileName);
+			Logger.printError("Could not write settings to " + theFileName);
 		}
 	}
 	
@@ -260,7 +260,7 @@ public class Laserschein {
 		BufferedReader myReader = _myParent.createReader(theFileName);
 		
 		if(myReader == null){
-			Logger.printWarning("Laserschein.loadSettings", "Could not find settings file ( " + theFileName + " )...");
+			Logger.printWarning("Could not find settings file ( " + theFileName + " )...");
 			return;
 		}
 		
@@ -274,7 +274,7 @@ public class Laserschein {
 				geometry().updateTransforms();
 			}
 		} else {
-			Logger.printWarning("Laserschein.loadSettings", "Geometry settings not found in settings file...");
+			Logger.printWarning("Geometry settings not found in settings file...");
 		}
 			
 		
@@ -285,11 +285,11 @@ public class Laserschein {
 				optimizer().settings().loadFromXml(myOptimizerXml);
 			}
 		} else {
-			Logger.printWarning("Laserschein.loadSettings", "Optimizer settings not found in settings file...");
+			Logger.printWarning("Optimizer settings not found in settings file...");
 		}
 		
 		
-		Logger.printInfo("Laserschein.loadSettings", "Settings loaded from " + theFileName);
+		Logger.printInfo("Settings loaded from " + theFileName);
 		
 		
 		if(hasControlWindow()) {
@@ -308,7 +308,7 @@ public class Laserschein {
 	 * Cleans up when the processing applet exits. Gets called automatically. Do not worry.
 	 */
 	public void dispose() {
-		Logger.printInfo("Laserschein.dispose", "Destroying the Laser");
+		Logger.printInfo("Destroying the Laser");
 
 		if(_myOutput != null && _myOutput.getState() == OutputState.READY){
 			_myOutput.destroy();

@@ -71,9 +71,9 @@ public class EasylaseUsb2Native {
 	 * Maximum framesize is 16.000 points or 128 Kbytes. Value in Bytenumber is number of
 	 * points in the frame multiplied with 8
 	 * Pointspeed is outputspeed in pps and should be between 1000 and 65.535.
-	 * @param CardNumber  0 – number of cards
+	 * @param CardNumber  0 - number of cards
 	 * @param Datapointer The frame
-	 * @param Bytenumber 0 – 1FFFFh 
+	 * @param Bytenumber 0 - 1FFFFh 
 	 * @param Pointspeed 1000 - FFFFh 
 	 * @return true -> Okay, false -> USB error
 	 */
@@ -83,9 +83,9 @@ public class EasylaseUsb2Native {
 	/**
 	 * Send a frame like EasyLaseWriteFrame, but without automatic frame repeat, if there is no
 	 * new frame following the actual one. Output stops at the last point until new frame comes in.
-	 * @param CardNumber 0 – number of cards
+	 * @param CardNumber 0 - number of cards
 	 * @param Datapointer The frame
-	 * @param Bytenumber 0 – 1FFFFh
+	 * @param Bytenumber 0 - 1FFFFh
 	 * @param Pointspeed 1000 - FFFFh
 	 * @param RepNum 0
 	 * @return true -> Okay, false -> USB error

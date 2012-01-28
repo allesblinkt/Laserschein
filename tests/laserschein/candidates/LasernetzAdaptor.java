@@ -70,11 +70,5 @@ public class LasernetzAdaptor extends AbstractLaserOutput{
 	public int getMaximumScanSpeed() {
 		return 100000; // TODO: Query from the network? Probably...
 	}
-	
-	
-	
-	private class PointStruct {
-		
-	}
 
 }

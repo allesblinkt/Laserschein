@@ -1,7 +1,6 @@
 package laserschein.tests;
 
 import processing.core.PApplet;
-import processing.opengl.PGraphicsOpenGL;
 import laserschein.*;
 
 @SuppressWarnings("serial")
@@ -26,16 +25,11 @@ public class TestAuxWindow extends PApplet {
 		
 		
 		background(60);
-		
-		
-		
-		
+			
 		
 		Laser3D renderer = laser.renderer();
 		beginRaw(renderer);
-		
-		
-		
+				
 
 		stroke(0,255,0);
 
@@ -80,8 +74,8 @@ public class TestAuxWindow extends PApplet {
 
 
 		
-			stroke(255,255,0);
-			//ellipse(20,20, 400,400);
+		stroke(255,255,0);
+		//ellipse(20,20, 400,400);
 		
 		endRaw();
 		
