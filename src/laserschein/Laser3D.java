@@ -2,7 +2,7 @@
  *  
  *  Laserschein. interactive ILDA output from processing and java
  *
- *  2011 by Benjamin Maus
+ *  2012 by Benjamin Maus
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -25,11 +25,12 @@ package laserschein;
 
 import processing.core.*;
 
+
 /**
  * This graphics object (renderer) receives raw vertices from the Processing
  * drawing routines. The vertices are already 2D. 
  * 
- * @author allesblinkt
+ * @author Benjamin Maus
  */
 public class Laser3D extends PGraphics2D {
 

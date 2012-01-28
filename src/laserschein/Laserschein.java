@@ -2,7 +2,7 @@
  *  
  *  Laserschein. interactive ILDA output from processing and java
  *
- *  2011 by Benjamin Maus
+ *  2012 by Benjamin Maus
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -34,7 +34,7 @@ import processing.xml.XMLElement;
 /**
  * The main library
  * 
- * @author allesblinkt
+ * @author Benjamin Maus
  */
 public class Laserschein {
 	
@@ -299,9 +299,6 @@ public class Laserschein {
 
 	}
 	
-	
-	
-	
 
 
 	/**
@@ -316,6 +313,13 @@ public class Laserschein {
 	}
 	
 	
+	/**
+	 * @return true if it is open, false if hidden or if it doesn't exist
+	 */
+	public boolean isControlWindowVisible() {
+		return hasControlWindow() && controlWindow().isOpen();
+	}
+	
 	
 	public boolean hasControlWindow() {
 		return (_myControlWindow != null);
@@ -329,6 +333,9 @@ public class Laserschein {
 	}
 	
 	
+	/**
+	 * @return the control window. This might be null, if it doesn't exist
+	 */
 	public ControlWindow controlWindow() {
 		return _myControlWindow;
 	}

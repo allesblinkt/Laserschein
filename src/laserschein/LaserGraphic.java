@@ -29,7 +29,7 @@ import java.util.Vector;
  * Collects graphics (i.e. connected shapes) for one frame to be displayed. {@link laserschein.Optimizer} turns this into a 
  * {@link laserschein.LaserFrame} suitable for output on a laser scanner.
  * 
- * @author allesblinkt
+ * @author Benjamin Maus
  */
 public class LaserGraphic {
 

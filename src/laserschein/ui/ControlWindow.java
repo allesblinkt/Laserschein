@@ -2,7 +2,7 @@
  *  
  *  Laserschein. interactive ILDA output from processing and java
  *
- *  2011 by Benjamin Maus
+ *  2012 by Benjamin Maus
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -74,6 +74,7 @@ public class ControlWindow extends PApplet {
 
 	private BooleanTweaker _myLockScaleSlider;
 
+	
 	/* Optimizer */
 	private NumberTweaker _myOptBlankhiftSlider;
 	private BooleanTweaker _myOptReorderToggle;
@@ -665,6 +666,11 @@ public class ControlWindow extends PApplet {
 	public void unopen() {
 		noLoop();
 		_myFrame.setVisible(false);
+	}
+	
+	
+	public boolean isOpen() {
+		return _myFrame.isVisible();
 	}
 
 

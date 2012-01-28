@@ -2,7 +2,7 @@
  *  
  *  Laserschein. interactive ILDA output from processing and java
  *
- *  2011 by Benjamin Maus
+ *  2012 by Benjamin Maus
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -189,8 +189,7 @@ public class Simulator {
 
 		}
 	}
-	
-	
+		
 	
 	private float mapX(float theX) {
 		return theX;

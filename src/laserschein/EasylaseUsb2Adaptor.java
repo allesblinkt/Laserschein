@@ -2,7 +2,7 @@
  *  
  *  Laserschein. interactive ILDA output from processing and java
  *
- *  2011 by Benjamin Maus
+ *  2012 by Benjamin Maus
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -33,7 +33,7 @@ import com.sun.jna.ptr.IntByReference;
 /**
  * Is going to provide a connection to the Easylase USB 2 ILDA box
  * 
- * @author allesblinkt
+ * @author Benjamin Maus
  */
 public class EasylaseUsb2Adaptor extends AbstractLaserOutput {
 	
