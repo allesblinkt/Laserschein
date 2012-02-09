@@ -26,7 +26,8 @@ package laserschein;
 import java.util.Vector;
 
 /**
- * Collects graphics (i.e. connected shapes) for one frame to be displayed. {@link laserschein.Optimizer} turns this into a 
+ * Collects graphics (i.e. connected shapes) for one frame to be displayed. 
+ * {@link laserschein.Optimizer} turns this into a 
  * {@link laserschein.LaserFrame} suitable for output on a laser scanner.
  * 
  * @author Benjamin Maus
@@ -50,7 +51,8 @@ public class LaserGraphic {
 	
 	
 	/**
-	 * Performs a greedy sort to minimize the jumps  between the shapes. Also reverses the order sometimes to find better results.
+	 * Performs a greedy sort to minimize the jumps  between the shapes. 
+	 * Also reverses the order sometimes to find better results.
 	 */
 	public void sort() {
 		
@@ -94,6 +96,10 @@ public class LaserGraphic {
 					myBestDistanceSquared = myDistanceSquared;
 					myBestIndex = i;			
 				}
+				
+				
+				// TODO: merge shapes if distance & color match!
+				// TODO: Think about greedy scatter search
 			}
 
 			final LaserShape myLastShape = myShapes.get(myBestIndex);

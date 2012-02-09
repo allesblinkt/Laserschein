@@ -97,7 +97,6 @@ public class LaserShape {
 			_myPoints.add(myTmp.get(i));
 		}
 		
-		
 	}
 
 	
