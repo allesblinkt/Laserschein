@@ -23,15 +23,16 @@
  */
 package laserschein;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 
 public class LaserShape {
-	private Vector<LaserPoint> _myPoints;
+	private ArrayList<LaserPoint> _myPoints;
 	private boolean _myIsClosed;
 	
 	public LaserShape() {
-		_myPoints = new Vector<LaserPoint>();
+		_myPoints = new ArrayList<LaserPoint>();
 	}
 	
 	/**
@@ -40,16 +41,18 @@ public class LaserShape {
 	 * @param myShape
 	 */
 	public LaserShape(LaserShape theShape) {
-		_myPoints = new Vector<LaserPoint>();
+		_myPoints = new ArrayList<LaserPoint>();
 		
 		for(final LaserPoint myPoint:theShape.points()){
 			this.addPoint(new LaserPoint(myPoint));
 		}
 	}
+	
 
 	public void addPoint(final LaserPoint theLaserPoint) {
 		_myPoints.add(theLaserPoint);
 	}
+	
 	
 	/**
 	 * Start point of the shape
@@ -57,7 +60,7 @@ public class LaserShape {
 	 * @return
 	 */
 	public LaserPoint start() {
-		return _myPoints.firstElement();
+		return _myPoints.get(0);
 	}
 	
 	
@@ -67,7 +70,7 @@ public class LaserShape {
 	 * @return
 	 */
 	public LaserPoint end() {
-		return _myPoints.lastElement();
+		return _myPoints.get(_myPoints.size() - 1);
 	}
 	
 	
@@ -76,7 +79,7 @@ public class LaserShape {
 	}
 	
 	
-	public Vector<LaserPoint> points() {
+	public ArrayList<LaserPoint> points() {
 		return _myPoints;
 	}
 	

@@ -38,6 +38,12 @@ public class OptimizerSettings implements TweakableSettings {
 	 * Does a greedy sort on the paths. Also switches direction if needed.
 	 */
 	public boolean reorderFrame = true; 
+	
+	
+	/**
+	 * Clips the points to the bounding box
+	 */
+	public boolean clipFrame = true; 
 
 	
 	/**
@@ -112,6 +118,8 @@ public class OptimizerSettings implements TweakableSettings {
 		
 		final XMLElement myOptimize = myXml.getChild("optimize");
 		reorderFrame = myOptimize.getBoolean("reorder", reorderFrame);
+		clipFrame = myOptimize.getBoolean("clip", clipFrame);
+
 		blankShift = myOptimize.getInt("blankshift", blankShift);
 
 
@@ -151,6 +159,7 @@ public class OptimizerSettings implements TweakableSettings {
 		final XMLElement myOptimize = new XMLElement();
 		myOptimize.setName("optimize");
 		myOptimize.setBoolean("reorder", reorderFrame);
+		myOptimize.setBoolean("clip", clipFrame);
 		myOptimize.setInt("blankshift", blankShift);
 
 		myXml.addChild(myOptimize);

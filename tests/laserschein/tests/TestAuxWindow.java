@@ -9,7 +9,7 @@ public class TestAuxWindow extends PApplet {
 	Laserschein laser;
 
 	public void setup() {
-		size(600, 600, P3D);
+		size(600, 600, OPENGL);
 		frameRate(-1); // as fast as possible
 
 		smooth();		

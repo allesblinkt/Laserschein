@@ -43,6 +43,7 @@ import com.sun.jna.Platform;
 import laserschein.GeometrySettings;
 import laserschein.LaserFrame;
 import laserschein.Laserschein;
+import laserschein.Logger;
 import laserschein.OptimizerSettings;
 import laserschein.ui.AbstractTweaker.TweakerChangeListener;
 import processing.core.PApplet;
@@ -77,7 +78,10 @@ public class ControlWindow extends PApplet {
 	
 	/* Optimizer */
 	private NumberTweaker _myOptBlankhiftSlider;
+	
 	private BooleanTweaker _myOptReorderToggle;
+	private BooleanTweaker _myOptClipToggle;
+
 	private NumberTweaker _myOptAngleThresholdSlider;
 	private NumberTweaker _myOptOverdrawSlider;
 	private NumberTweaker _myOptExtraPointsStartSlider;
@@ -102,7 +106,7 @@ public class ControlWindow extends PApplet {
 			}
 
 		} catch (Exception e) {
-			// We don't care
+			Logger.printWarning("Could not seet GUI look and feel. No worries...");
 		}
 
 		final ControlWindow myApplet = new ControlWindow(theSchein, 550, 550);
@@ -181,6 +185,16 @@ public class ControlWindow extends PApplet {
 			}
 		});
 		myOptimizerPanel.add(_myOptReorderToggle);
+
+		
+		_myOptClipToggle = new BooleanTweaker("Clip frame", false); 
+		_myOptClipToggle.addChangeEventListener(new TweakerChangeListener<BooleanTweaker>() {
+			@Override
+			public void changed(BooleanTweaker theTweaker) {
+				updateOptimizerSettingsFromUi();
+			}
+		});
+		myOptimizerPanel.add(_myOptClipToggle);
 
 		
 		
@@ -356,6 +370,7 @@ public class ControlWindow extends PApplet {
 			mySettings.blankShift = Math.round(_myOptBlankhiftSlider.getValue());
 			
 			mySettings.reorderFrame = _myOptReorderToggle.getValue();
+			mySettings.clipFrame = _myOptClipToggle.getValue();
 
 			mySettings.smoothAngleTreshold = Math.round(_myOptAngleThresholdSlider.getValue());
 			mySettings.closedOverdraw = Math.round(_myOptOverdrawSlider.getValue());
@@ -386,6 +401,7 @@ public class ControlWindow extends PApplet {
 			_myOptBlankhiftSlider.setValue(mySettings.blankShift, false);
 
 			_myOptReorderToggle.setValue(mySettings.reorderFrame, false);
+			_myOptClipToggle.setValue(mySettings.clipFrame, false);
 
 			_myOptAngleThresholdSlider.setValue(mySettings.smoothAngleTreshold, false);
 			_myOptOverdrawSlider.setValue(mySettings.closedOverdraw, false);
@@ -600,6 +616,7 @@ public class ControlWindow extends PApplet {
 		translate(1,1);
 
 		if(_myDoDrawSimulation){
+			scale(0.9f); //TODO: remove me
 			_mySimulator.draw(g);
 		}
 

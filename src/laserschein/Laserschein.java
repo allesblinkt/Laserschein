@@ -115,7 +115,6 @@ public class Laserschein {
 			Logger.printError("This is not a class supported as an output");
 		}
 
-	
 		_myRenderer = new Laser3D(_myParent, this);
 		
 		_myGeometryCorrector = new GeometryCorrector();
@@ -191,7 +190,7 @@ public class Laserschein {
 	public Optimizer optimizer() {
 		return _myOptimizer;
 	}
-	
+		
 	
 	
 	/**

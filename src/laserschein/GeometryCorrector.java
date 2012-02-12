@@ -38,17 +38,17 @@ public class GeometryCorrector {
 	 */
 	private PMatrix2D _myMatrix;
 	
-
-
+	
 	public GeometryCorrector() {
 		
 		_myMatrix = new PMatrix2D();	
-		_mySettings = new GeometrySettings();
+		_mySettings = new GeometrySettings();	
 		
-		
-		_myHomography = new Homography(_mySettings.homographySource1, _mySettings.homographySource2, _mySettings.homographySource3, _mySettings.homographySource4, _mySettings.homographyDestination1, _mySettings.homographyDestination2, _mySettings.homographyDestination3, _mySettings.homographyDestination4 );
+		_myHomography = new Homography(_mySettings.homographySource1, _mySettings.homographySource2, 
+										_mySettings.homographySource3, _mySettings.homographySource4, 
+										_mySettings.homographyDestination1, _mySettings.homographyDestination2,
+										_mySettings.homographyDestination3, _mySettings.homographyDestination4 );
 
-		
 		updateTransforms();
 	}
 	
@@ -62,7 +62,10 @@ public class GeometryCorrector {
 		_myMatrix.translate(_mySettings.offset.x, _mySettings.offset.y);
 		_myMatrix.scale(_mySettings.scale.x, _mySettings.scale.y);
 
-		_myHomography = new Homography(_mySettings.homographySource1, _mySettings.homographySource2, _mySettings.homographySource3, _mySettings.homographySource4, _mySettings.homographyDestination1, _mySettings.homographyDestination2, _mySettings.homographyDestination3, _mySettings.homographyDestination4 );
+		_myHomography = new Homography(_mySettings.homographySource1, _mySettings.homographySource2, 
+									   _mySettings.homographySource3, _mySettings.homographySource4, 
+									   _mySettings.homographyDestination1, _mySettings.homographyDestination2, 
+									   _mySettings.homographyDestination3, _mySettings.homographyDestination4 );
 
 	}
 	
@@ -119,8 +122,5 @@ public class GeometryCorrector {
 		
 		return myResult;		
 	}
-
-
-
 
 }

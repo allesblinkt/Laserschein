@@ -41,7 +41,9 @@ public class LaserPoint {
 	public boolean isCorner = false;
 	public boolean isBlanked = false;
 	public float turningAngle = 180;
-
+	
+	
+	public static float EQUAL_DISTANCE = 2.0f / 16000.0f;
 
 	public LaserPoint() {
 		this.x = 0;
@@ -49,7 +51,7 @@ public class LaserPoint {
 	}
 
 
-	public LaserPoint(int theX, int theY) {
+	public LaserPoint(float theX, float theY) {
 		this.x = theX;
 		this.y = theY;
 	}
@@ -79,9 +81,8 @@ public class LaserPoint {
 	 * @param theOther
 	 * @return
 	 */
-	public boolean isCoincided(final LaserPoint theOther) {
-		if (this.x == theOther.x &&
-				this.y == theOther.y &&
+	public boolean isCoincided(final LaserPoint theOther) { 
+		if (this.almostSame(theOther) &&
 				this.r == theOther.r &&
 				this.g == theOther.g &&
 				this.b == theOther.b &&
@@ -157,6 +158,11 @@ public class LaserPoint {
 		final float myX = theOther.x - this.x;
 		final float myY = theOther.y - this.y;
 		return myX * myX + myY * myY;
+	}
+	
+	
+	public boolean almostSame(final LaserPoint theOther) {
+		return distanceSquared(theOther) < EQUAL_DISTANCE * EQUAL_DISTANCE;
 	}
 	
 

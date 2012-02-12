@@ -36,11 +36,14 @@ import java.util.Vector;
 public class Optimizer {
 
 	private OptimizerSettings _mySettings;
+	private BoundsClipper _myClipper;
+
 
 	private static final float SMALLEST_DISTANCE = 2/16000.0f;
 	
 	public Optimizer() {
 		_mySettings = new OptimizerSettings();
+		_myClipper = new BoundsClipper();
 	}
 
 
@@ -59,6 +62,11 @@ public class Optimizer {
 
 		if (_mySettings.reorderFrame) {
 			myLaserGraphic.sort();
+		}
+		
+		
+		if(_mySettings.clipFrame) {
+			myLaserGraphic = _myClipper.clip(myLaserGraphic);
 		}
 
 		myOptimizedFrame = createFrameWithSingleBlanks(myLaserGraphic);

@@ -52,7 +52,7 @@ public class LaserGraphic {
 	
 	/**
 	 * Performs a greedy sort to minimize the jumps  between the shapes. 
-	 * Also reverses the order sometimes to find better results.
+	 * Also reverses tries to reverse the order to find better results.
 	 */
 	public void sort() {
 		
@@ -112,13 +112,12 @@ public class LaserGraphic {
 			myLastPoint = myLastShape.end();
 			
 			mySortedShapes.add(myLastShape);
-
-
 		}
 		
 		_myShapes.clear();
 		_myShapes.addAll(mySortedShapes);
 	}
+	
 
 
 	/**

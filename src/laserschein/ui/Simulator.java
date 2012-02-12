@@ -34,7 +34,8 @@ import processing.opengl.PGraphicsOpenGL;
 
 
 /**
- * This is a rudimentary simulator for laser output. It is based on the simulator in openlase by Hector Martin.
+ * This is a rudimentary simulator for laser output. It is based on the simulator 
+ * in openlase by Hector Martin.
  * @see http://git.marcansoft.com/?p=openlase.git
  *
  */
@@ -63,7 +64,7 @@ public class Simulator {
 		final GL myGl = myPgl.gl;
 
 		theG.hint(PGraphics.DISABLE_DEPTH_TEST);
-		
+
 		myGl.glEnable(GL.GL_BLEND);
 		myGl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		myGl.glBlendEquation(GL.GL_FUNC_ADD);
@@ -90,11 +91,11 @@ public class Simulator {
 
 				float myR = 0, myG = 0, myB = 0;
 
-				// // lowpass
+				/* Lowpass filter */
 				mySample.x = myLastSample.x * 0.65f + mySample.x * 0.35f;
 				mySample.y = myLastSample.y * 0.65f + mySample.y * 0.35f;
-				// // delay brightness
-
+				
+				/* Brightness delay */
 				rdelay[(BLANKING_DELAY + i - 1) % BLANKING_DELAY] = mySample.r;
 				mySample.r = rdelay[i % BLANKING_DELAY];
 
@@ -104,6 +105,7 @@ public class Simulator {
 				bdelay[(BLANKING_DELAY + i - 1) % BLANKING_DELAY] = mySample.b;
 				mySample.b = bdelay[i % BLANKING_DELAY];
 
+				
 				float myDistance = PApplet.dist(mySample.x, mySample.y, myLastSample.x, myLastSample.y);
 				if (myDistance == 0) {
 					myDistance = 0.0001f;
@@ -119,7 +121,8 @@ public class Simulator {
 				float myFactor = (HISTORY_SIZE - myAge) / (float) HISTORY_SIZE;
 				myFactor = myFactor * myFactor;
 
-				if (PApplet.abs(mySample.x - myLastSample.x) < 0.001f && PApplet.abs(mySample.y - myLastSample.y) < 0.001f) {
+				if (PApplet.abs(mySample.x - myLastSample.x) < 0.001f && 
+					PApplet.abs(mySample.y - myLastSample.y) < 0.001f) {
 					myR = (mySample.r - 0.2f) * myFactor * 1.4f;
 					myG = (mySample.g - 0.2f) * myFactor * 1.4f;
 					myB = (mySample.b - 0.2f) * myFactor * 1.4f;
@@ -147,7 +150,7 @@ public class Simulator {
 				myLastSample.r = myR;
 				myLastSample.g = myG;
 				myLastSample.b = myB;
-				//
+				
 				myIndex++;
 				if (myIndex >= BUFFER_SIZE) {
 					myIndex = 0;
@@ -157,9 +160,8 @@ public class Simulator {
 		}
 
 		theG.popMatrix();
-		
-		myGl.glDisable(GL.GL_BLEND);
 
+		myGl.glDisable(GL.GL_BLEND);
 	}
 
 
@@ -189,8 +191,8 @@ public class Simulator {
 
 		}
 	}
-		
-	
+
+
 	private float mapX(float theX) {
 		return theX;
 	}
@@ -201,22 +203,30 @@ public class Simulator {
 	}
 
 
-	private void laserColor(final PGraphics theGd, float theRed, float theGreen, float theBlue, float theAlphaScale) {
-		theGd.stroke(PApplet.constrain(theRed * 255, 0, 255), PApplet.constrain(theGreen * 255, 0, 255), PApplet.constrain(theBlue * 255, 0, 255), PApplet.constrain(theAlphaScale * 255, 0, 255));
+	private void laserColor(final PGraphics theGd, float theRed, float theGreen, float theBlue, 
+							float theAlphaScale) {
+		theGd.stroke(
+				PApplet.constrain(theRed * 255, 0, 255), 
+				PApplet.constrain(theGreen * 255, 0, 255), 
+				PApplet.constrain(theBlue * 255, 0, 255), 
+				PApplet.constrain(theAlphaScale * 255, 0, 255)
+				);
 	}	
-	
-	
+
+
 	private class PreviewSample {
 		float x;
 		float y;
+		
 		float r;
 		float g;
 		float b;
-
+		
 
 		public PreviewSample() {
 			this.x = 0;
 			this.y = 0;
+			
 			this.r = 0;
 			this.g = 0;
 			this.b = 0;
@@ -226,6 +236,7 @@ public class Simulator {
 		public PreviewSample(final PreviewSample theOther) {
 			this.x = theOther.x;
 			this.y = theOther.y;
+			
 			this.r = theOther.r;
 			this.g = theOther.g;
 			this.b = theOther.b;
