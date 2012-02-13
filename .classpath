@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="devlib/opengl/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="devlib/opengl/opengl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Laserschein/devlib/opengl/macosx"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Laserschein/devlib/opengl/windows32"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="devlib/opengl/jogl.jar"/>

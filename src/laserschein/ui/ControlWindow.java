@@ -616,7 +616,6 @@ public class ControlWindow extends PApplet {
 		translate(1,1);
 
 		if(_myDoDrawSimulation){
-			scale(0.9f); //TODO: remove me
 			_mySimulator.draw(g);
 		}
 

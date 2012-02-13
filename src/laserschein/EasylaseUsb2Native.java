@@ -49,8 +49,14 @@ public class EasylaseUsb2Native {
 				Native.register("jmlaser");
 				state = NativeState.READY;
 			} 
-			catch (Exception e) { state = NativeState.NOT_FOUND;  } 
-			catch (Error e) { state = NativeState.NOT_FOUND; } 
+			catch (Exception e) {
+				Logger.printError(e.toString());
+				state = NativeState.NOT_FOUND;  
+			} 
+			catch (Error e) { 
+				Logger.printError(e.toString());
+				state = NativeState.NOT_FOUND; 
+			} 
 		}
 		else {
 			state = NativeState.UNSUPPORTED_PLATFORM;
